@@ -1,0 +1,9 @@
+<form [formGroup]="form" (ngSubmit)="auth.login(form.value)">
+  <mat-form-field class="fullWidth">
+    <input matInput type="email" name="email" placeholder="Email" formControlName="email">
+  </mat-form-field>  
+  <mat-form-field class="fullWidth">
+    <input matInput type="password" name="password" placeholder="Password" formControlName="password">
+  </mat-form-field>
+  <button mat-raised-button color="primary" type="submit" [disabled]="!form.valid">Login</button>
+</form>
