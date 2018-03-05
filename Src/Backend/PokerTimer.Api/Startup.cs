@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -47,6 +48,8 @@ namespace PokerTimer.Api
                 };
             });
 
+            services.AddCors(options => options.AddPolicy("cors", builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+
             services.AddMvc();
         }
 
@@ -59,6 +62,8 @@ namespace PokerTimer.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors("cors");
 
             app.UseMvc();
         }
