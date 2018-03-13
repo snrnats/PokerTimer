@@ -11,9 +11,13 @@ namespace PokerTimer.Api.Models.Tournament
         public string OwnerId { get; set; }
         public string Title { get; set; }
 
+        /// <summary>
+        /// Utc time
+        /// </summary>
+        public DateTimeOffset StartDate { get; set; }
         [JsonConverter(typeof(TimeSpanJsonConverter), TimeSpan.TicksPerSecond)]
         public TimeSpan PauseDuration { get; set; }
-
+        
         [JsonIgnore]
         public int SetupId { get; set; }
         public Setup Setup { get; set; }

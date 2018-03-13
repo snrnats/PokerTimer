@@ -35,6 +35,7 @@ namespace PokerTimer.Api
             var tournament = new Tournament {Title = "Fisrt Tournament"};
             tournament.OwnerId = user.Id;
             tournament.SetupId = setup.Id;
+            tournament.StartDate = DateTimeOffset.Now;
 
             context.Add(tournament);
 

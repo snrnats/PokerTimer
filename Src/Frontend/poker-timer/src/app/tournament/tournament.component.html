@@ -1,0 +1,10 @@
+<ng-container *ngIf="tournament$ | async as tournament">
+  <h3>"{{ tournament.title }}"</h3>
+  {{currentLevel(tournament)}}
+  <!--<mat-progress-spinner
+        class="example-margin"
+        [color]="color"
+        [mode]="mode"
+        [value]="value">
+    </mat-progress-spinner>-->
+</ng-container>

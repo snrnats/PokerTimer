@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Tournament } from '@app/models/tournament.model';
-import { Observable } from 'rxjs/Observable';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { catchError, retry } from 'rxjs/operators';
+import 'rxjs/add/operator/map';
+import { JsonRevivers } from '@app/shared/json-revivers';
+import { Observable } from 'rxjs';
 
 const baseUrl = "http://localhost:49500/api/";
 const tournamentsEndpoint = baseUrl + "tournaments";
@@ -29,6 +31,10 @@ export class ApiService {
   };
 
   getTournaments() {
-    return this.http.get<Tournament[]>(tournamentsEndpoint).pipe(retry(3), catchError(this.handleError));
+    return this.http.get(tournamentsEndpoint, { responseType: 'text' }).pipe(retry(3), catchError(this.handleError)).map(res => JSON.parse(res, JsonRevivers.date));
+  }
+
+  getTournament(id: number): Observable<Tournament> {
+    return this.http.get(tournamentsEndpoint + `/${id}`, { responseType: 'text' }).pipe(retry(3), catchError(this.handleError)).map(res => JSON.parse(res, JsonRevivers.date));
   }
 }

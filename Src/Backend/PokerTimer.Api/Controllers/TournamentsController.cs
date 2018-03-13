@@ -45,7 +45,7 @@ namespace PokerTimer.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var tournament = await _context.Tournaments.SingleOrDefaultAsync(m => m.Id == id);
+            var tournament = await _context.Tournaments.Include(t => t.Setup).ThenInclude(s => s.Levels).SingleOrDefaultAsync(m => m.Id == id);
 
             if (tournament == null)
             {
