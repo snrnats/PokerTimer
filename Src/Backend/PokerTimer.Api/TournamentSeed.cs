@@ -39,6 +39,13 @@ namespace PokerTimer.Api
 
             context.Add(tournament);
 
+            var tournament2 = new Tournament {Title = "Second Tournament"};
+            tournament2.OwnerId = user.Id;
+            tournament2.SetupId = setup.Id;
+            tournament2.StartDate = DateTimeOffset.Now.AddHours(1);
+
+            context.Add(tournament2);
+
             await context.SaveChangesAsync();
         }
     }

@@ -15,6 +15,11 @@ namespace PokerTimer.Api.Models.Tournament
         [JsonConverter(typeof(TimeSpanJsonConverter), TimeSpan.TicksPerSecond)]
         public TimeSpan PauseDuration { get; set; }
 
+        public bool IsPaused { get; set; }
+
+        [JsonIgnore]
+        public DateTimeOffset? PauseStart { get; set; }
+
         [JsonIgnore]
         public int SetupId { get; set; }
 

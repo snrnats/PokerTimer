@@ -9,6 +9,8 @@ import { Observable } from 'rxjs';
 
 const baseUrl = "http://localhost:49500/api/";
 const tournamentsEndpoint = baseUrl + "tournaments";
+const pauseEndpoint = "pause";
+const resumeEndpoint = "resume";
 @Injectable()
 export class ApiService {
 
@@ -37,4 +39,13 @@ export class ApiService {
   getTournament(id: number): Observable<Tournament> {
     return this.http.get(tournamentsEndpoint + `/${id}`, { responseType: 'text' }).pipe(retry(3), catchError(this.handleError)).map(res => JSON.parse(res, JsonRevivers.date));
   }
+
+  pauseTournament(id:number): Observable<Object> {
+    return this.http.put(tournamentsEndpoint + `/${id}`, "");
+  }
+
+  resumeTournament(id:number): Observable<Object> {
+    return this.http.put(tournamentsEndpoint + `/${id}`, "");
+  }
+
 }

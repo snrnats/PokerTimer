@@ -5,6 +5,7 @@ import { Tournament } from '@app/models/tournament.model';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/switchMap';
 import { TournamentManager } from '@app/shared/tournament-manager';
+import { SetupLevel } from '@app/models/setup-level.model';
 
 @Component({
   selector: 'app-tournament',
@@ -12,9 +13,11 @@ import { TournamentManager } from '@app/shared/tournament-manager';
   styleUrls: ['./tournament.component.css']
 })
 export class TournamentComponent implements OnInit {
-
   tournament: Tournament;
-  levelProgress: number;  
+  levelProgress: number;
+  tournamentStatus: string;
+  levelTimeLeft: number;
+  level: SetupLevel;
 
   constructor(private route: ActivatedRoute, private api: ApiService) { }
 
@@ -22,33 +25,41 @@ export class TournamentComponent implements OnInit {
     this.route.paramMap.switchMap((params: ParamMap) => {
       let tournamentId = Number(params.get('id'));
       return this.api.getTournament(tournamentId);
-    }).subscribe(res => this.tournament = res);
+    }).subscribe(res => {
+      console.log(res);
+      this.tournament = res;
+      this.beginTournamentTracking();
+    });
   }
 
   beginTournamentTracking(): void {
     let startDate = this.tournament.startDate;
     let endDate = TournamentManager.getEndDate(this.tournament);
     let now = new Date();
-    if (now >= startDate && now <= endDate) {
-      this.updateTournamentStatus();
-    }
+    this.updateTournamentStatusPeriodically();
   }
 
-  updateTournamentStatus():void {
-    let levelIndex = TournamentManager.getCurrentLevel(this.tournament);
-    
+  updateTournamentStatus(): void {
+    let status = TournamentManager.getTournamentStatus(this.tournament);
 
-    setTimeout(this.updateTournamentStatus, 1000);
+    this.tournamentStatus = status.info;
+    this.levelProgress = status.levelProgress;
+    this.levelTimeLeft = status.levelTimeLeft;
+    this.level = status.levelIndex >= 0 ? this.tournament.setup.levels[status.levelIndex] : null;
   }
 
-  currentLevel(tournament: Tournament): string {
-    let levelIndex = TournamentManager.getCurrentLevel(tournament);
-    if (levelIndex === -1) {
-      return "Tournament has not started yet"
-    } else if (levelIndex === -2) {
-      return "Tournament has finished"
-    }
-    return `On going: ${levelIndex + 1} level`;
+  updateTournamentStatusPeriodically(): void {
+    console.log("updating tournament status");
+    this.updateTournamentStatus();
+    setTimeout(() => this.updateTournamentStatusPeriodically(), 1000);
+  }
+
+  onPaused():void {
+
+  }
+
+  onResumed():void {
+
   }
 
 }

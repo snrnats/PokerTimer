@@ -5,5 +5,6 @@ export interface Tournament {
     title: string;
     setup: TournamentSetup;
     startDate: Date;
-    pauseDuration:number;
+    pauseDuration: number;
+    isPaused: boolean;
 }

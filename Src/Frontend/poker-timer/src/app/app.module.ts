@@ -21,6 +21,7 @@ import { ApiService } from './api.service';
 import { TournamentsComponent } from './tournaments/tournaments.component';
 import { AuthInterceptor } from '@app/auth.interceptor';
 import { TournamentComponent } from './tournament/tournament.component';
+import { TimeSpanPipe } from '@app/pipes/time-span.pipe';
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import { TournamentComponent } from './tournament/tournament.component';
     LoginComponent,
     RegisterComponent,
     TournamentsComponent,
-    TournamentComponent
+    TournamentComponent,
+    TimeSpanPipe
   ],
   imports: [
     BrowserModule,

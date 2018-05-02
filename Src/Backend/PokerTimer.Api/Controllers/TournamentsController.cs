@@ -145,6 +145,35 @@ namespace PokerTimer.Api.Controllers
             return Ok(tournament);
         }
 
+        [Authorize]
+        [HttpPut("pause/{id}")]
+        public async Task<IActionResult> PauseTournament([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var tournament = await _context.Tournaments.SingleOrDefaultAsync(t => t.Id == id);
+
+            if (tournament == null)
+            {
+                return NotFound();
+            }
+
+            var userId = User.GetUserId();
+            if (tournament.OwnerId != userId)
+            {
+                return BadRequest();
+            }
+
+            tournament.IsPaused = true;
+            _context.Entry(tournament).Property(nameof(Tournament.IsPaused)).IsModified = true;
+            await _context.SaveChangesAsync();
+
+            return Ok(tournament);
+        }
+
         private bool TournamentExists(int id)
         {
             return _context.Tournaments.Any(e => e.Id == id);
