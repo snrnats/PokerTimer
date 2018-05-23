@@ -4,3 +4,9 @@
 .fullWidth {
     width: 100%
 }
+
+.mat-fab {
+    position: fixed !important;
+    bottom: 20px;
+    right: 50px;
+}

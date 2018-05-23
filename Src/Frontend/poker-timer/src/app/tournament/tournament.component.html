@@ -1,7 +1,4 @@
 <content *ngIf="status !== undefined" class="md-padding">
-    <button mat-fab class="md-fab-bottom-right" aria-label="upload photo">
-        +
-    </button>
     <h3>{{ tournament.title }}</h3>
     {{status.progress}}
     <mat-progress-spinner mode="determinate" [value]="status.levelProgress">

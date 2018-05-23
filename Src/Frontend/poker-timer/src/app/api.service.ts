@@ -5,8 +5,9 @@ import { catchError, retry, map } from 'rxjs/operators';
 
 import { JsonRevivers } from '@app/shared/json-revivers';
 import { Observable, throwError, ObservableInput } from 'rxjs';
+import { Config } from '@app/shared/config';
 
-const baseUrl = "http://localhost:49500/api/";
+const baseUrl = Config.backendUrl+ "api/";
 const tournamentsEndpoint = baseUrl + "tournaments";
 const pauseEndpoint = "pause";
 const resumeEndpoint = "resume";
