@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '@app/api.service';
 import { Tournament } from '@app/models/tournament.model';
-import { Observable } from 'rxjs/Rx';
 
 @Component({
   selector: 'app-tournaments',
