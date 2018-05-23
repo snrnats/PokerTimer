@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Input, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ApiService } from '@app/api.service';
 import { Tournament } from '@app/models/tournament.model';
@@ -6,20 +6,20 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/switchMap';
 import { TournamentManager } from '@app/shared/tournament-manager';
 import { SetupLevel } from '@app/models/setup-level.model';
+import { TournamentStatus } from '@app/models/tournament-status.model';
 
 @Component({
   selector: 'app-tournament',
   templateUrl: './tournament.component.html',
-  styleUrls: ['./tournament.component.css']
+  styleUrls: ['./tournament.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TournamentComponent implements OnInit {
   tournament: Tournament;
-  levelProgress: number;
-  tournamentStatus: string;
-  levelTimeLeft: number;
-  level: SetupLevel;
+  status: TournamentStatus;
+  isPaused: boolean = false;
 
-  constructor(private route: ActivatedRoute, private api: ApiService) { }
+  constructor(private route: ActivatedRoute, private api: ApiService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.route.paramMap.switchMap((params: ParamMap) => {
@@ -33,33 +33,30 @@ export class TournamentComponent implements OnInit {
   }
 
   beginTournamentTracking(): void {
-    let startDate = this.tournament.startDate;
-    let endDate = TournamentManager.getEndDate(this.tournament);
-    let now = new Date();
     this.updateTournamentStatusPeriodically();
   }
 
   updateTournamentStatus(): void {
-    let status = TournamentManager.getTournamentStatus(this.tournament);
-
-    this.tournamentStatus = status.info;
-    this.levelProgress = status.levelProgress;
-    this.levelTimeLeft = status.levelTimeLeft;
-    this.level = status.levelIndex >= 0 ? this.tournament.setup.levels[status.levelIndex] : null;
+    this.status = TournamentManager.getStatus(this.tournament);
+    this.cdr.detectChanges();
   }
 
   updateTournamentStatusPeriodically(): void {
-    console.log("updating tournament status");
     this.updateTournamentStatus();
+
+    console.log(`updating tournament status ${this.status.levelTimeLeft}`);
     setTimeout(() => this.updateTournamentStatusPeriodically(), 1000);
   }
 
-  onPaused():void {
+  onPaused(): void {
 
   }
 
-  onResumed():void {
+  onResumed(): void {
 
   }
 
+  update(): void {
+    this.updateTournamentStatus();
+  }
 }

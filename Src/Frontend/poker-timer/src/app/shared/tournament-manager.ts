@@ -1,9 +1,9 @@
 import { Tournament } from "@app/models/tournament.model";
-import { TournamentStatus } from "@app/shared/tournament-status";
+import { TournamentStatus } from "@app/models/tournament-status.model";
+import { TournamentProgress } from "@app/models/tournament-progress.enum";
 
 export class TournamentManager {
-
-    static getLevelEndDate(tournament: Tournament, levelIndex: number): Date {
+    private static getLevelEndDate(tournament: Tournament, levelIndex: number): Date {
         console.assert(levelIndex < tournament.setup.levels.length);
 
         let date = new Date(tournament.startDate);
@@ -18,11 +18,11 @@ export class TournamentManager {
         return date;
     }
 
-    static getEndDate(tournament: Tournament): Date {
+    private static getEndDate(tournament: Tournament): Date {
         return this.getLevelEndDate(tournament, tournament.setup.levels.length - 1);
     }
 
-    static getCurrentLevel(tournament: Tournament): number {
+    private static getCurrentLevel(tournament: Tournament): number {
         let now = new Date();
 
         let date = new Date(tournament.startDate);
@@ -43,23 +43,29 @@ export class TournamentManager {
         return -2;
     }
 
-    static getTournamentStatus(tournament: Tournament): TournamentStatus {
+    private static getLevelTimeLeft(levelEndTime): number {
+        return (levelEndTime.getTime() - new Date().getTime()) / 1000;
+    }
+
+    private static getLevelProgress(levelTimeLeft: number, levelIndex: number, tournament: Tournament): number {
+        return (1 - (levelTimeLeft / tournament.setup.levels[levelIndex].duration)) * 100
+    }
+
+    static getStatus(tournament: Tournament): TournamentStatus {
+        let status: TournamentStatus;
         let levelIndex = TournamentManager.getCurrentLevel(tournament);
-        console.log(`level ${levelIndex}`);
-        let status = new TournamentStatus();
         if (levelIndex === -1) {
-            status.info = "Tournament has not started yet"
+            let progress = TournamentProgress.NotStarted;
+            status = new TournamentStatus(progress);
         } else if (levelIndex === -2) {
-            status.info = "Tournament has finished"
+            let progress = TournamentProgress.Finished;
+            status = new TournamentStatus(progress);
         } else if (levelIndex >= 0) {
-            status.info = `On going: ${levelIndex + 1} level`;
-
+            let progress = TournamentProgress.OnGoing;
             let levelEndTime = TournamentManager.getLevelEndDate(tournament, levelIndex);
-            let timeLeftSeconds = (levelEndTime.getTime() - new Date().getTime()) / 1000;
-
-            status.levelIndex = levelIndex;
-            status.levelTimeLeft = timeLeftSeconds;
-            status.levelProgress = (1 - (timeLeftSeconds / tournament.setup.levels[levelIndex].duration)) * 100;
+            let levelTimeLeft = TournamentManager.getLevelTimeLeft(levelEndTime);
+            let levelProgress = TournamentManager.getLevelProgress(levelTimeLeft, levelIndex, tournament);
+            status = new TournamentStatus(progress, levelIndex, tournament.setup.levels[levelIndex], levelEndTime, levelTimeLeft, levelProgress);
         }
         return status;
     }

@@ -1,14 +1,17 @@
-<ng-container *ngIf="tournament">
+<content *ngIf="status !== undefined" class="md-padding">
+    <button mat-fab class="md-fab-bottom-right" aria-label="upload photo">
+        +
+    </button>
     <h3>{{ tournament.title }}</h3>
-    {{tournamentStatus}}
-    <mat-progress-spinner mode="determinate" [value]="levelProgress">
+    {{status.progress}}
+    <mat-progress-spinner mode="determinate" [value]="status.levelProgress">
     </mat-progress-spinner>
     <div style="position:relative; top: -60px; left: 30px;">
-        {{levelTimeLeft|timeSpan}}
+        {{status.levelTimeLeft|timeSpan}}
     </div>
-    <div *ngIf="level">
-        Small: {{level.smallBlind}} Big: {{level.bigBlind}}
+    <div *ngIf="status.level">
+        Small: {{status.level.smallBlind}} Big: {{status.level.bigBlind}}
     </div>
     <button *ngIf="!isPaused" mat-raised-button color="primary" (click)="onPaused()">Pause</button>
     <button *ngIf="isPaused" mat-raised-button color="primary" (click)="onResumed()">Resume</button>
-</ng-container>
+</content>
