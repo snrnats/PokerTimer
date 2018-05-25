@@ -5,8 +5,12 @@
     width: 100%
 }
 
-.mat-fab {
+.fab-button-window {
     position: fixed !important;
     bottom: 20px;
-    right: 50px;
+    right: 20px;
+}
+
+.fab-button-parent {
+    float: right;
 }

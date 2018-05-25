@@ -45,11 +45,20 @@ export class ApiService {
   }
 
   createTournament(tournament: Tournament): Observable<Object> {
-    return this.http.post(tournamentsEndpoint, tournament);
+    return this.http.post(tournamentsEndpoint, tournament).pipe(catchError(this.handleError));
   }
 
   getSetups(): Observable<TournamentSetup[]> {
     return this.http.get(setupsEndpoint, { responseType: "text" }).
+      pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
+  }
+
+  createSetup(setup: TournamentSetup): Observable<Object> {
+    return this.http.post(setupsEndpoint, setup).pipe(catchError(this.handleError));
+  }
+
+  getSetup(id: number): Observable<TournamentSetup> {
+    return this.http.get(setupsEndpoint + `/${id}`, { responseType: "text" }).
       pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
   }
 

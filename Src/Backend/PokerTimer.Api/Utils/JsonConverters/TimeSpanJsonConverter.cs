@@ -15,12 +15,12 @@ namespace PokerTimer.Api.Utils.JsonConverters
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var ts = (TimeSpan) value;
-            writer.WriteValue(ts.Ticks / _tickRatio);
+            serializer.Serialize(writer, ts.Ticks / _tickRatio);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var value = reader.ReadAsInt32().GetValueOrDefault(0);
+            var value = serializer.Deserialize<int>(reader);         
             return new TimeSpan(value * _tickRatio);
         }
 

@@ -4,7 +4,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 
-import { MatButtonModule, MatCheckboxModule, MatSelectModule } from "@angular/material";
+import { MatButtonModule, MatCheckboxModule, MatSelectModule, MatExpansionModule } from "@angular/material";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatInputModule } from "@angular/material/input";
 import { MatCardModule } from "@angular/material/card";
@@ -24,7 +24,9 @@ import { TimeSpanPipe } from "@app/pipes/time-span.pipe";
 import { TournamentEditComponent } from "./tournament/tournament-edit.component";
 import { DateTimeInputComponent } from "@app/custom-controls/datetime-input";
 import { DatePipe } from "@angular/common";
-import { SetupComponent } from "./setup/setup.component";
+import { SetupEditComponent } from "./setup/setup-edit.component";
+import { SetupsComponent } from "@app/setup/setups.component";
+import { SetupComponent } from "@app/setup/setup.component";
 
 @NgModule({
   declarations: [
@@ -37,6 +39,8 @@ import { SetupComponent } from "./setup/setup.component";
     TournamentComponent,
     TimeSpanPipe,
     TournamentEditComponent,
+    SetupEditComponent,
+    SetupsComponent,
     SetupComponent
   ],
   imports: [
@@ -51,7 +55,9 @@ import { SetupComponent } from "./setup/setup.component";
     AppRoutingModule,
     ReactiveFormsModule,
     MatInputModule,
-    MatSelectModule
+    MatSelectModule,
+    MatCheckboxModule,
+    MatExpansionModule
   ],
   providers: [AuthService, ApiService, DatePipe,
     {

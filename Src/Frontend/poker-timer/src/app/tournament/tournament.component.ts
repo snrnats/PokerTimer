@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, SimpleChanges, ChangeDetectorRef } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, Input, SimpleChanges, ChangeDetectorRef, OnDestroy } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { ApiService } from "@app/api.service";
 import { Tournament } from "@app/models/tournament.model";
@@ -15,10 +15,11 @@ import { TournamentStatus } from "@app/models/tournament-status.model";
   styleUrls: ["./tournament.component.css"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TournamentComponent implements OnInit {
+export class TournamentComponent implements OnInit, OnDestroy {
   tournament: Tournament;
   status: TournamentStatus;
   isPaused = false;
+  intervalHandle: any;
 
   constructor(private route: ActivatedRoute, private api: ApiService, private cdr: ChangeDetectorRef) { }
 
@@ -33,6 +34,10 @@ export class TournamentComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    clearInterval(this.intervalHandle);
+  }
+
   beginTournamentTracking(): void {
     this.updateTournamentStatusPeriodically();
   }
@@ -45,8 +50,7 @@ export class TournamentComponent implements OnInit {
   updateTournamentStatusPeriodically(): void {
     this.updateTournamentStatus();
 
-    console.log(`updating tournament status ${this.status.levelTimeLeft}`);
-    setTimeout(() => this.updateTournamentStatusPeriodically(), 1000);
+    this.intervalHandle = setInterval(() => this.updateTournamentStatus(), 1000);
   }
 
   onPaused(): void {

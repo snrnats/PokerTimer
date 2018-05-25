@@ -1,0 +1,51 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field class="fullWidth">
+        <input matInput type="text" placeholder="Title" formControlName="title" />
+    </mat-form-field>
+
+    <mat-form-field class="fullWidth">
+        <input matInput type="number" placeholder="Starting chips" formControlName="startingChips" />
+    </mat-form-field>
+
+    <mat-form-field class="fullWidth">
+        <input matInput type="number" placeholder="Number of players" formControlName="numberOfPlayers" />
+    </mat-form-field>
+
+    <mat-checkbox formControlName="isInfinite">Is infinite</mat-checkbox>
+
+
+    <mat-accordion formArrayName="levels">
+        <mat-expansion-panel *ngFor="let level of levels.controls; let i=index" [formGroupName]="i">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Personal data
+                </mat-panel-title>
+                <mat-panel-description>
+                    Type your name and age
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-form-field>
+                <input matInput type="number" placeholder="Duration" formControlName="duration">
+            </mat-form-field>
+
+            <mat-form-field>
+                <input matInput type="number" placeholder="Small blind" formControlName="smallBlind">
+            </mat-form-field>
+
+            <mat-form-field>
+                <input matInput type="number" placeholder="Big blind" formControlName="bigBlind">
+            </mat-form-field>
+
+            <mat-form-field>
+                <input matInput type="number" placeholder="ante" formControlName="ante">
+            </mat-form-field>
+        </mat-expansion-panel>
+        <button mat-fab class="fab-button-parent" (click)="onAdded()">
+            +
+        </button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!form.valid">Save</button>
+    </mat-accordion>
+</form>
+
+{{form.value|json}}

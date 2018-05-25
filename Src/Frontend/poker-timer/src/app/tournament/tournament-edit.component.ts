@@ -11,11 +11,11 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 export class TournamentEditComponent implements OnInit {
 
   form: FormGroup;
-  private setups: TournamentSetup[];
+  setups: TournamentSetup[];
   constructor(private fb: FormBuilder, private api: ApiService) {
 
     this.form = fb.group({
-      title: ["", [Validators.required]],
+      title: ["dis", [Validators.required]],
       startDate: [new Date(), [Validators.required, Validators.minLength(6)]],
       setupId: ["", [Validators.required]]
     });
