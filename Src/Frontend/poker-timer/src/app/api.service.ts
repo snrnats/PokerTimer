@@ -6,9 +6,11 @@ import { catchError, retry, map } from 'rxjs/operators';
 import { JsonRevivers } from '@app/shared/json-revivers';
 import { Observable, throwError, ObservableInput } from 'rxjs';
 import { Config } from '@app/shared/config';
+import { TournamentSetup } from '@app/models/tournament-setup.model';
 
-const baseUrl = Config.backendUrl+ "api/";
+const baseUrl = Config.backendUrl + "api/";
 const tournamentsEndpoint = baseUrl + "tournaments";
+const setupsEndpoint = baseUrl + "setups";
 const pauseEndpoint = "pause";
 const resumeEndpoint = "resume";
 @Injectable()
@@ -30,7 +32,7 @@ export class ApiService {
     // return an ErrorObservable with a user-facing error message
     return throwError(
       'Something bad happened; please try again later.');
-  };
+  }
 
   getTournaments() {
     return this.http.get(tournamentsEndpoint, { responseType: 'text' }).pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
@@ -40,11 +42,19 @@ export class ApiService {
     return this.http.get(tournamentsEndpoint + `/${id}`, { responseType: 'text' }).pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
   }
 
-  pauseTournament(id:number): Observable<Object> {
+  createTournament(tournament: Tournament): Observable<Object> {
+    return this.http.post(tournamentsEndpoint, tournament);
+  }
+
+  getSetups(): Observable<TournamentSetup[]> {
+    return this.http.get(setupsEndpoint, { responseType: 'text' }).pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
+  }
+
+  pauseTournament(id: number): Observable<Object> {
     return this.http.put(tournamentsEndpoint + `/${id}`, "");
   }
 
-  resumeTournament(id:number): Observable<Object> {
+  resumeTournament(id: number): Observable<Object> {
     return this.http.put(tournamentsEndpoint + `/${id}`, "");
   }
 

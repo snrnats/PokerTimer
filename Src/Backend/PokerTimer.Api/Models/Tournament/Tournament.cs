@@ -19,8 +19,7 @@ namespace PokerTimer.Api.Models.Tournament
 
         [JsonIgnore]
         public DateTimeOffset? PauseStart { get; set; }
-
-        [JsonIgnore]
+        
         public int SetupId { get; set; }
 
         public Setup Setup { get; set; }

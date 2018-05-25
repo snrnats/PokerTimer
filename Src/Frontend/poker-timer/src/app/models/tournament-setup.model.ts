@@ -1,4 +1,4 @@
-import { SetupLevel } from "@app/models//setup-level.model";
+import { SetupLevel } from "@app/models/setup-level.model";
 
 export interface TournamentSetup {
     id: number;

@@ -24,7 +24,7 @@ export class TournamentComponent implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.pipe(switchMap((params: ParamMap) => {
-      let tournamentId = Number(params.get('id'));
+      const tournamentId = Number(params.get('id'));
       return this.api.getTournament(tournamentId);
     })).subscribe(res => {
       console.log(res);

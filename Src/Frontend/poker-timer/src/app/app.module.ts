@@ -2,37 +2,42 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http"
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 
-
-import { MatButtonModule, MatCheckboxModule } from '@angular/material';
+import { MatButtonModule, MatCheckboxModule, MatSelectModule } from '@angular/material';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
-import {MatCardModule} from '@angular/material/card';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { AppRoutingModule } from './app-routing.module';
-import { AuthService } from './auth.service'
+import { AuthService } from './auth.service';
 import { ApiService } from './api.service';
-import { TournamentsComponent } from './tournaments/tournaments.component';
+import { TournamentsComponent } from './tournament/tournaments.component';
 import { AuthInterceptor } from '@app/auth.interceptor';
 import { TournamentComponent } from './tournament/tournament.component';
 import { TimeSpanPipe } from '@app/pipes/time-span.pipe';
-
+import { TournamentEditComponent } from './tournament/tournament-edit.component';
+import { DateTimeInputComponent } from '@app/custom-controls/datetime-input';
+import { DatePipe } from '@angular/common';
+import { SetupComponent } from './setup/setup.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavComponent,
+    DateTimeInputComponent,
     LoginComponent,
     RegisterComponent,
     TournamentsComponent,
     TournamentComponent,
-    TimeSpanPipe
+    TimeSpanPipe,
+    TournamentEditComponent,
+    SetupComponent
   ],
   imports: [
     BrowserModule,
@@ -45,9 +50,10 @@ import { TimeSpanPipe } from '@app/pipes/time-span.pipe';
     MatProgressSpinnerModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    MatInputModule
+    MatInputModule,
+    MatSelectModule
   ],
-  providers: [AuthService, ApiService,
+  providers: [AuthService, ApiService, DatePipe,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

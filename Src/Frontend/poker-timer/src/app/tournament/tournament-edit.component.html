@@ -1,0 +1,20 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-form-field class="fullWidth">
+    <input matInput type="text" placeholder="Title" formControlName="title">
+  </mat-form-field>
+
+
+  <app-datetime-input placeholder="Start date" formControlName="startDate"></app-datetime-input>
+
+  <mat-form-field class="fullWidth">
+    <mat-select placeholder="Tournament setup" formControlName="setupId">
+      <mat-option *ngFor="let setup of setups" [value]="setup.id">
+        {{setup.title}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" type="submit" [disabled]="!form.valid">Save</button>
+</form>
+
+{{form.value|json}}
