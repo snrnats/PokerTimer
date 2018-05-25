@@ -1,10 +1,10 @@
-import { Component, Input, ViewChild } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { DatePipe } from '@angular/common';
-import { MatInput } from '@angular/material';
+import { Component, Input, ViewChild } from "@angular/core";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { DatePipe } from "@angular/common";
+import { MatInput } from "@angular/material";
 
 @Component({
-    selector: 'app-datetime-input',
+    selector: "app-datetime-input",
     template: `
     <input matInput [placeholder]="placeholder"
         type="datetime-local"
@@ -25,7 +25,7 @@ export class DateTimeInputComponent implements ControlValueAccessor {
     }
 
     writeValue(value: any) {
-        this.dateInput = value == null ? '' : this.datePipe.transform(value, 'yyyy-MM-dd');
+        this.dateInput = value == null ? "" : this.datePipe.transform(value, "yyyy-MM-dd");
     }
 
     registerOnChange(fn: (value: any) => void) {
@@ -36,6 +36,6 @@ export class DateTimeInputComponent implements ControlValueAccessor {
     }
 
     update() {
-        this.onChange(this.input.value ? new Date(this.input.value) : '');
+        this.onChange(this.input.value ? new Date(this.input.value) : "");
     }
 }

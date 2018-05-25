@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Tournament } from '@app/models/tournament.model';
-import { catchError, retry, map } from 'rxjs/operators';
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { Tournament } from "@app/models/tournament.model";
+import { catchError, retry, map } from "rxjs/operators";
 
-import { JsonRevivers } from '@app/shared/json-revivers';
-import { Observable, throwError, ObservableInput } from 'rxjs';
-import { Config } from '@app/shared/config';
-import { TournamentSetup } from '@app/models/tournament-setup.model';
+import { JsonRevivers } from "@app/shared/json-revivers";
+import { Observable, throwError, ObservableInput } from "rxjs";
+import { Config } from "@app/shared/config";
+import { TournamentSetup } from "@app/models/tournament-setup.model";
 
 const baseUrl = Config.backendUrl + "api/";
 const tournamentsEndpoint = baseUrl + "tournaments";
@@ -21,7 +21,7 @@ export class ApiService {
   private handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
-      console.error('An error occurred:', error.error.message);
+      console.error("An error occurred:", error.error.message);
     } else {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong,
@@ -31,15 +31,17 @@ export class ApiService {
     }
     // return an ErrorObservable with a user-facing error message
     return throwError(
-      'Something bad happened; please try again later.');
+      "Something bad happened; please try again later.");
   }
 
   getTournaments() {
-    return this.http.get(tournamentsEndpoint, { responseType: 'text' }).pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
+    return this.http.get(tournamentsEndpoint, { responseType: "text" }).
+      pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
   }
 
   getTournament(id: number): Observable<Tournament> {
-    return this.http.get(tournamentsEndpoint + `/${id}`, { responseType: 'text' }).pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
+    return this.http.get(tournamentsEndpoint + `/${id}`, { responseType: "text" }).
+      pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
   }
 
   createTournament(tournament: Tournament): Observable<Object> {
@@ -47,7 +49,8 @@ export class ApiService {
   }
 
   getSetups(): Observable<TournamentSetup[]> {
-    return this.http.get(setupsEndpoint, { responseType: 'text' }).pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
+    return this.http.get(setupsEndpoint, { responseType: "text" }).
+      pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
   }
 
   pauseTournament(id: number): Observable<Object> {

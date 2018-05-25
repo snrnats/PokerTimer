@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { ApiService } from '@app/api.service';
-import { Tournament } from '@app/models/tournament.model';
+import { Component, OnInit } from "@angular/core";
+import { ApiService } from "@app/api.service";
+import { Tournament } from "@app/models/tournament.model";
 
 @Component({
-  selector: 'app-tournaments',
-  templateUrl: './tournaments.component.html',
-  styleUrls: ['./tournaments.component.css']
+  selector: "app-tournaments",
+  templateUrl: "./tournaments.component.html",
+  styleUrls: ["./tournaments.component.css"]
 })
 export class TournamentsComponent implements OnInit {
 

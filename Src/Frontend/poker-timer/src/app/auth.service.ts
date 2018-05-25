@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Credentials } from './models/credentials.model';
-import { Router } from '@angular/router';
-import { Config } from '@app/shared/config';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Credentials } from "./models/credentials.model";
+import { Router } from "@angular/router";
+import { Config } from "@app/shared/config";
 
 @Injectable()
 export class AuthService {
@@ -10,7 +10,7 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) { }
 
   get isAuthenticated() {
-    return !!localStorage.getItem('token')
+    return !!localStorage.getItem("token");
   }
 
   register(credentials: Credentials) {
@@ -32,7 +32,7 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem("token")
+    localStorage.removeItem("token");
 
     this.router.navigate(["/"]);
   }

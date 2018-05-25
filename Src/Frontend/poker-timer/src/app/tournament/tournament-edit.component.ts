@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { ApiService } from '@app/api.service';
-import { TournamentSetup } from '@app/models/tournament-setup.model';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit } from "@angular/core";
+import { ApiService } from "@app/api.service";
+import { TournamentSetup } from "@app/models/tournament-setup.model";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 @Component({
-  selector: 'app-tournament-edit',
-  templateUrl: './tournament-edit.component.html',
-  styleUrls: ['./tournament-edit.component.css']
+  selector: "app-tournament-edit",
+  templateUrl: "./tournament-edit.component.html",
+  styleUrls: ["./tournament-edit.component.css"]
 })
 export class TournamentEditComponent implements OnInit {
 
@@ -15,9 +15,9 @@ export class TournamentEditComponent implements OnInit {
   constructor(private fb: FormBuilder, private api: ApiService) {
 
     this.form = fb.group({
-      title: ['', [Validators.required]],
+      title: ["", [Validators.required]],
       startDate: [new Date(), [Validators.required, Validators.minLength(6)]],
-      setupId: ['', [Validators.required]]
+      setupId: ["", [Validators.required]]
     });
   }
 

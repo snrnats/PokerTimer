@@ -1,3 +1,3 @@
 export class Config {
-    public static backendUrl: string = "http://localhost:49500/";
+    public static backendUrl = "http://localhost:49500/";
 }
