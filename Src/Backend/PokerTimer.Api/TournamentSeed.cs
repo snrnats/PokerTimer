@@ -20,6 +20,8 @@ namespace PokerTimer.Api
             var setup = new Setup();
             setup.Title = "Test setup";
             setup.OwnerId = user.Id;
+            setup.StartingChips = 2000;
+            setup.NumberOfPlayers = 4;
             setup.Levels = new List<Level>();
 
             var smallBlind = 10;

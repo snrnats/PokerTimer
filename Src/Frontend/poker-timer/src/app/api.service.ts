@@ -9,10 +9,10 @@ import { Config } from "@app/shared/config";
 import { TournamentSetup } from "@app/models/tournament-setup.model";
 
 const baseUrl = Config.backendUrl + "api/";
-const tournamentsEndpoint = baseUrl + "tournaments";
-const setupsEndpoint = baseUrl + "setups";
-const pauseEndpoint = "pause";
-const resumeEndpoint = "resume";
+const tournamentsEndpoint = baseUrl + "tournaments/";
+const setupsEndpoint = baseUrl + "setups/";
+const pauseEndpoint = "pause/";
+const resumeEndpoint = "resume/";
 @Injectable()
 export class ApiService {
 
@@ -40,12 +40,17 @@ export class ApiService {
   }
 
   getTournament(id: number): Observable<Tournament> {
-    return this.http.get(tournamentsEndpoint + `/${id}`, { responseType: "text" }).
+    return this.http.get(tournamentsEndpoint + `${id}`, { responseType: "text" }).
       pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
   }
 
-  createTournament(tournament: Tournament): Observable<Object> {
-    return this.http.post(tournamentsEndpoint, tournament).pipe(catchError(this.handleError));
+  createTournament(tournament: Tournament): Observable<Tournament> {
+    return this.http.post(tournamentsEndpoint, tournament, { responseType: "text" }).
+      pipe(catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
+  }
+
+  updateTournament(tournament: Tournament): Observable<Object> {
+    return this.http.put(tournamentsEndpoint + `${tournament.id}`, tournament).pipe(catchError(this.handleError));
   }
 
   getSetups(): Observable<TournamentSetup[]> {
@@ -53,21 +58,26 @@ export class ApiService {
       pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
   }
 
-  createSetup(setup: TournamentSetup): Observable<Object> {
-    return this.http.post(setupsEndpoint, setup).pipe(catchError(this.handleError));
+  createSetup(setup: TournamentSetup): Observable<TournamentSetup> {
+    return this.http.post(setupsEndpoint, setup, { responseType: "text" }).
+      pipe(catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
+  }
+
+  updateSetup(setup: TournamentSetup): Observable<Object> {
+    return this.http.put(setupsEndpoint + `${setup.id}`, setup).pipe(catchError(this.handleError));
   }
 
   getSetup(id: number): Observable<TournamentSetup> {
-    return this.http.get(setupsEndpoint + `/${id}`, { responseType: "text" }).
+    return this.http.get(setupsEndpoint + `${id}`, { responseType: "text" }).
       pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
   }
 
   pauseTournament(id: number): Observable<Object> {
-    return this.http.put(tournamentsEndpoint + `/${id}`, "");
+    return this.http.put(tournamentsEndpoint + `${id}`, "");
   }
 
   resumeTournament(id: number): Observable<Object> {
-    return this.http.put(tournamentsEndpoint + `/${id}`, "");
+    return this.http.put(tournamentsEndpoint + `${id}`, "");
   }
 
 }

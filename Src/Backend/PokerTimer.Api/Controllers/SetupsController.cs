@@ -26,7 +26,7 @@ namespace PokerTimer.Api.Controllers
         public IEnumerable<Setup> GetSetup()
         {
             var userId = User.GetUserId();
-            return _context.Setups.Where(setup => setup.OwnerId == userId);
+            return _context.Setups.Include(s => s.Levels).Where(setup => setup.OwnerId == userId);
         }
 
         // GET: api/Setups/5
@@ -38,7 +38,7 @@ namespace PokerTimer.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var setup = await _context.Setups.SingleOrDefaultAsync(m => m.Id == id);
+            var setup = await _context.Setups.Include(s => s.Levels).SingleOrDefaultAsync(m => m.Id == id);
 
             if (setup == null)
             {
@@ -70,6 +70,7 @@ namespace PokerTimer.Api.Controllers
                 return BadRequest();
             }
 
+            _context.Entry(storedSetup).State = EntityState.Detached;
             setup.OwnerId = userId;
             _context.Entry(setup).State = EntityState.Modified;
 

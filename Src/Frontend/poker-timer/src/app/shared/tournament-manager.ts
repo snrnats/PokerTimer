@@ -56,16 +56,16 @@ export class TournamentManager {
         const levelIndex = TournamentManager.getCurrentLevel(tournament);
         if (levelIndex === -1) {
             const progress = TournamentProgress.NotStarted;
-            status = new TournamentStatus(progress);
+            status = new TournamentStatus(tournament, progress);
         } else if (levelIndex === -2) {
             const progress = TournamentProgress.Finished;
-            status = new TournamentStatus(progress);
+            status = new TournamentStatus(tournament, progress);
         } else if (levelIndex >= 0) {
             const progress = TournamentProgress.OnGoing;
             const levelEndTime = TournamentManager.getLevelEndDate(tournament, levelIndex);
             const levelTimeLeft = TournamentManager.getLevelTimeLeft(levelEndTime);
             const levelProgress = TournamentManager.getLevelProgress(levelTimeLeft, levelIndex, tournament);
-            status = new TournamentStatus(progress, levelIndex, tournament.setup.levels[levelIndex],
+            status = new TournamentStatus(tournament, progress, levelIndex, tournament.setup.levels[levelIndex],
                 levelEndTime, levelTimeLeft, levelProgress);
         }
         return status;

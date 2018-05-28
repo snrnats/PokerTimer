@@ -25,7 +25,7 @@ export class DateTimeInputComponent implements ControlValueAccessor {
     }
 
     writeValue(value: any) {
-        this.dateInput = value == null ? "" : this.datePipe.transform(value, "yyyy-MM-dd");
+        this.dateInput = value == null ? "" : this.datePipe.transform(value, "yyyy-MM-ddTHH:mm");
     }
 
     registerOnChange(fn: (value: any) => void) {

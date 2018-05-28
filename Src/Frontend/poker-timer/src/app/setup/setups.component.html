@@ -6,10 +6,11 @@
         <mat-card-content>
         </mat-card-content>
         <mat-card-actions>
-            <button mat-button routerLink="/setup/{{setup.id}}">DETAILS</button>
+            <button mat-button routerLink="/setups/{{setup.id}}">DETAILS</button>
+            <button mat-button routerLink="/setups/edit/{{setup.id}}">EDIT</button>
         </mat-card-actions>
     </mat-card>
 </div>
-<button mat-fab class="fab-button-window" routerLink="/setup/create">
+<button mat-fab class="fab-button-window" routerLink="/setups/create">
     +
 </button>

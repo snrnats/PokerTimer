@@ -78,6 +78,7 @@ namespace PokerTimer.Api.Controllers
                 return BadRequest();
             }
 
+            _context.Entry(storedTournament).State = EntityState.Detached;
             tournament.OwnerId = userId;
             _context.Entry(tournament).State = EntityState.Modified;
 

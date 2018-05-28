@@ -1,14 +1,22 @@
 <content *ngIf="status !== undefined">
     <h3>{{ tournament.title }}</h3>
-    {{status.progress}}
-    <mat-progress-spinner mode="determinate" [value]="status.levelProgress">
-    </mat-progress-spinner>
-    <div style="position:relative; top: -60px; left: 30px;">
-        {{status.levelTimeLeft|timeSpan}}
-    </div>
-    <div *ngIf="status.level">
-        Small: {{status.level.smallBlind}} Big: {{status.level.bigBlind}}
-    </div>
-    <button *ngIf="!isPaused" mat-raised-button color="primary" (click)="onPaused()">Pause</button>
-    <button *ngIf="isPaused" mat-raised-button color="primary" (click)="onResumed()">Resume</button>
+    <ng-container [ngSwitch]="status.progress">
+        <div *ngSwitchCase="TournamentProgress.NotStarted"> Starting at {{tournament.startDate}} </div>
+        <ng-container *ngSwitchCase="TournamentProgress.Finished">
+            <div> Finished </div>
+        </ng-container>
+        <ng-container *ngSwitchCase="TournamentProgress.OnGoing">
+            {{status.progress}}
+            <mat-progress-spinner mode="determinate" [value]="status.levelProgress">
+            </mat-progress-spinner>
+            <div style="position:relative; top: -60px; left: 30px;">
+                {{status.levelTimeLeft|timeSpan}}
+            </div>
+            <div *ngIf="status.level">
+                Small: {{status.level.smallBlind}} Big: {{status.level.bigBlind}}
+            </div>
+            <button *ngIf="!isPaused" mat-raised-button color="primary" (click)="onPaused()">Pause</button>
+            <button *ngIf="isPaused" mat-raised-button color="primary" (click)="onResumed()">Resume</button>
+        </ng-container>
+    </ng-container>
 </content>

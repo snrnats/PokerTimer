@@ -27,7 +27,10 @@ import { DatePipe } from "@angular/common";
 import { SetupEditComponent } from "./setup/setup-edit.component";
 import { SetupsComponent } from "@app/setup/setups.component";
 import { SetupComponent } from "@app/setup/setup.component";
-
+import { PageNotFoundComponent } from "./page-not-found/page-not-found.component";
+/*
+Add visibility to setups and tournaments: only me (private), not listed (by id), public
+*/
 @NgModule({
   declarations: [
     AppComponent,
@@ -41,7 +44,8 @@ import { SetupComponent } from "@app/setup/setup.component";
     TournamentEditComponent,
     SetupEditComponent,
     SetupsComponent,
-    SetupComponent
+    SetupComponent,
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,

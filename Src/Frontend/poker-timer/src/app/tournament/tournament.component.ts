@@ -8,6 +8,7 @@ import { switchMap } from "rxjs/operators";
 import { TournamentManager } from "@app/shared/tournament-manager";
 import { SetupLevel } from "@app/models/setup-level.model";
 import { TournamentStatus } from "@app/models/tournament-status.model";
+import { TournamentProgress } from "@app/models/tournament-progress.enum";
 
 @Component({
   selector: "app-tournament",
@@ -16,12 +17,14 @@ import { TournamentStatus } from "@app/models/tournament-status.model";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TournamentComponent implements OnInit, OnDestroy {
+  TournamentProgress = TournamentProgress;
   tournament: Tournament;
   status: TournamentStatus;
   isPaused = false;
   intervalHandle: any;
 
-  constructor(private route: ActivatedRoute, private api: ApiService, private cdr: ChangeDetectorRef) { }
+  constructor(private route: ActivatedRoute, private api: ApiService, private cdr: ChangeDetectorRef) {
+  }
 
   ngOnInit() {
     this.route.paramMap.pipe(switchMap((params: ParamMap) => {
