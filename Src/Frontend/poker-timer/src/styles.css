@@ -20,3 +20,8 @@
     margin-left: auto;
     margin-right: auto;
 }
+
+.upcoming-tournament {
+    background-color: #7FFF00;
+    margin: 4px 0px;
+}

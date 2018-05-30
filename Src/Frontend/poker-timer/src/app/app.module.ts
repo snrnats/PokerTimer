@@ -30,6 +30,7 @@ import { SetupComponent } from "@app/setup/setup.component";
 import { PageNotFoundComponent } from "./page-not-found/page-not-found.component";
 /*
 Add visibility to setups and tournaments: only me (private), not listed (by id), public
+Handle server and network errors
 */
 @NgModule({
   declarations: [

@@ -1,8 +1,8 @@
 <div *ngFor="let status of statuses">
-  <mat-card>
+  <mat-card [ngClass]="{'upcoming-tournament':status.progress === TournamentProgress.NotStarted }">
     <mat-card-header>
       <mat-card-title>{{status.tournament.title}}</mat-card-title>
-      <mat-card-subtitle>{{status.progress}}</mat-card-subtitle>
+      <mat-card-subtitle>{{status.tournament.startDate|date:"medium"}}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
     </mat-card-content>
@@ -12,6 +12,6 @@
     </mat-card-actions>
   </mat-card>
 </div>
-<button mat-fab class="fab-button-window" routerLink="/tournaments/create" >
+<button mat-fab class="fab-button-window" routerLink="/tournaments/create">
   +
 </button>

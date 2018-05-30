@@ -3,6 +3,7 @@ import { ApiService } from "@app/api.service";
 import { Tournament } from "@app/models/tournament.model";
 import { TournamentManager } from "@app/shared/tournament-manager";
 import { TournamentStatus } from "@app/models/tournament-status.model";
+import { TournamentProgress } from "@app/models/tournament-progress.enum";
 
 @Component({
   selector: "app-tournaments",
@@ -10,6 +11,7 @@ import { TournamentStatus } from "@app/models/tournament-status.model";
   styleUrls: ["./tournaments.component.css"]
 })
 export class TournamentsComponent implements OnInit {
+  TournamentProgress = TournamentProgress;
   statuses: TournamentStatus[];
 
   constructor(private api: ApiService) {
