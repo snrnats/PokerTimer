@@ -6,6 +6,7 @@ import { switchMap } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { TournamentSetup } from "@app/models/tournament-setup.model";
 import { SetupLevel } from "@app/models/setup-level.model";
+import { MatTableDataSource } from "@angular/material";
 
 @Component({
   selector: "app-setup-edit",
@@ -14,6 +15,8 @@ import { SetupLevel } from "@app/models/setup-level.model";
 })
 export class SetupEditComponent implements OnInit {
 
+  setups: TournamentSetup[];
+  dataSource: MatTableDataSource<TournamentSetup>;
   private id: number;
   form: FormGroup;
   constructor(private fb: FormBuilder, private api: ApiService, private route: ActivatedRoute, private router: Router) { }

@@ -1,4 +1,4 @@
-<div *ngFor="let setup of setups">
+<!--<div *ngFor="let setup of setups">
     <mat-card>
         <mat-card-header>
             <mat-card-title>{{setup.title}}</mat-card-title>
@@ -10,7 +10,55 @@
             <button mat-button routerLink="/setups/edit/{{setup.id}}">EDIT</button>
         </mat-card-actions>
     </mat-card>
-</div>
+</div>-->
+<table mat-table [dataSource]="dataSource" matSort>
+    <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Title </th>
+        <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="startingChips">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Starting chips </th>
+        <td mat-cell *matCellDef="let element"> {{element.startingChips}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="numberOfPlayers">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Number of players </th>
+        <td mat-cell *matCellDef="let element"> {{element.numberOfPlayers}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="levelDuration">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Level duration </th>
+        <td mat-cell *matCellDef="let element"> {{getLevelDuration(element) | timeSpan}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="initialBlinds">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Initial blinds </th>
+        <td mat-cell *matCellDef="let element"> {{getBlinds(element)}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+        <td mat-cell *matCellDef="let element">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item routerLink="/setups/edit/{{element.id}}">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                </button>
+                <button mat-menu-item (click)="delete(element)">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                </button>
+            </mat-menu>
+        </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
 <button mat-fab class="fab-button-window" routerLink="/setups/create">
     +
 </button>

@@ -67,6 +67,10 @@ export class ApiService {
     return this.http.put(setupsEndpoint + `${setup.id}`, setup).pipe(catchError(this.handleError));
   }
 
+  deleteSetup(id: number): Observable<Object> {
+    return this.http.delete(setupsEndpoint + `${id}`).pipe(catchError(this.handleError));
+  }
+
   getSetup(id: number): Observable<TournamentSetup> {
     return this.http.get(setupsEndpoint + `${id}`, { responseType: "text" }).
       pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));

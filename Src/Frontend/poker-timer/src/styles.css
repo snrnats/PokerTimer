@@ -5,6 +5,10 @@
     width: 100%
 }
 
+.halfWidth {
+    width:50%;
+}
+
 .fab-button-window {
     position: fixed !important;
     bottom: 20px;
@@ -24,4 +28,20 @@
 .upcoming-tournament {
     background-color: #7FFF00;
     margin: 4px 0px;
+}
+
+table {
+    width: 100%;
+}
+
+.mat-column-actions {
+    width: 1px
+}
+
+.content-container {
+    margin: 20px 24px 0px 24px
+}
+
+.multi-field {
+    padding: 0px 12px 0px 12px
 }

@@ -26,7 +26,8 @@ namespace PokerTimer.Api.Controllers
         public IEnumerable<Setup> GetSetup()
         {
             var userId = User.GetUserId();
-            return _context.Setups.Include(s => s.Levels).Where(setup => setup.OwnerId == userId);
+            var setups = _context.Setups.Include(s => s.Levels).Where(setup => setup.OwnerId == userId);
+            return setups;
         }
 
         // GET: api/Setups/5
