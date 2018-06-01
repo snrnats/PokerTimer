@@ -45,3 +45,16 @@ table {
 .multi-field {
     padding: 0px 12px 0px 12px
 }
+
+
+.table-input:focus {
+    border-color: black !important;
+}
+
+.table-input {
+    border-bottom: 1px inset black !important;
+}
+
+.button-icon {
+    min-width: 10px;
+}

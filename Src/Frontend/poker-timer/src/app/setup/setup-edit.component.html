@@ -13,37 +13,56 @@
 
     <mat-checkbox formControlName="isInfinite">Is infinite</mat-checkbox>
 
-    <p>Levels:
-        <button mat-raised-button type="button" (click)="onAdded()">
-            Add Level
+    <mat-form-field *ngIf="form.value.isInfinite" style="display: block;margin-top: 12px">
+        <input matInput type="number" placeholder="Blind multiplier" formControlName="numberOfPlayers" />
+    </mat-form-field>
+
+    <p class="mat-title" style="margin-top: 24px">Levels
+        <button type="button" mat-icon-button (click)="onAdded()" color="accent">
+            <mat-icon>add</mat-icon>
         </button>
     </p>
 
 
-    <table formArrayName="levels">
+    <table class="mat-table" formArrayName="levels">
         <thead>
-            <tr>
-                <th> Index </th>
-                <th> Small blind </th>
-                <th> Big blind </th>
-                <th> Ante </th>
-                <th> Duration </th>
+            <tr class="mat-header-row">
+                <th class="mat-header-cell"> Index </th>
+                <th class="mat-header-cell"> Small blind </th>
+                <th class="mat-header-cell"> Big blind </th>
+                <th class="mat-header-cell"> Ante </th>
+                <th class="mat-header-cell"> Duration </th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let level of levels.controls; let i = index" [formGroupName]="i">
-                <td> {{i+1}} </td>
-                <td>
-                    <input type='text' formControlName="smallBlind">
+            <tr class="mat-row" *ngFor="let level of levels.controls; let i = index" [formGroupName]="i">
+                <td class="mat-cell"> {{i+1}} </td>
+                <td class="mat-cell">
+                    <mat-form-field>
+                        <input matInput type='text' formControlName="smallBlind">
+                    </mat-form-field>
                 </td>
-                <td>
-                    <input type='text' formControlName="bigBlind">
+                <td class="mat-cell">
+                    <mat-form-field>
+                        <input matInput type='text' formControlName="bigBlind">
+                    </mat-form-field>
                 </td>
-                <td>
-                    <input type='text' formControlName="ante">
+                <td class="mat-cell">
+                    <mat-form-field>
+                        <input matInput type='text' formControlName="ante">
+                    </mat-form-field>
+
                 </td>
-                <td>
-                    <input type='text' formControlName="duration">
+                <td class="mat-cell">
+                    <mat-form-field>
+                        <input matInput type='text' formControlName="duration">
+                    </mat-form-field>
+                </td>
+
+                <td class="mat-cell">
+                    <button type="button" mat-icon-button (click)="removeLevel(i)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
                 </td>
             </tr>
         </tbody>

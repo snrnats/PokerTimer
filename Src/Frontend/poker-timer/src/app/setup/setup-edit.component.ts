@@ -37,6 +37,7 @@ export class SetupEditComponent implements OnInit {
         startingChips: null,
         numberOfPlayers: null,
         isInfinite: false,
+        blindMultiplier: null,
         levels: []
       }));
     })).subscribe(res => {
@@ -46,6 +47,7 @@ export class SetupEditComponent implements OnInit {
         startingChips: [res.startingChips, [Validators.required]],
         numberOfPlayers: [res.numberOfPlayers, [Validators.required]],
         isInfinite: [res.isInfinite, [Validators.required]],
+        blindMultiplier: [res.blindMultiplier, []],
         levels: this.fb.array(res.levels.map(this.getLevelGroup, this))
       });
     });
