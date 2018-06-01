@@ -5,7 +5,8 @@ import { TournamentSetup } from "@app/models/tournament-setup.model";
 import { max, min } from "rxjs/operators";
 import { SetupLevel } from "@app/models/setup-level.model";
 import { from } from "rxjs";
-import { MatTableDataSource, MatSort, Sort, MatTable } from "@angular/material";
+import { MatTableDataSource, MatSort, Sort, MatTable, MatDialog } from "@angular/material";
+import { ConfirmDialogComponent } from "@app/shared/confirm-dialog/confirm-dialog.component";
 
 @Component({
     selector: "app-setups",
@@ -18,7 +19,7 @@ export class SetupsComponent implements OnInit {
     @ViewChild(MatSort) sort: MatSort;
     @ViewChild(MatTable) table: MatTable<TournamentSetup>;
     displayedColumns = ["title", "startingChips", "numberOfPlayers", "levelDuration", "initialBlinds", "actions"];
-    constructor(private api: ApiService, private cdr: ChangeDetectorRef) {
+    constructor(private api: ApiService, private cdr: ChangeDetectorRef, private dialog: MatDialog) {
     }
 
     ngOnInit() {
@@ -59,12 +60,17 @@ export class SetupsComponent implements OnInit {
         return "";
     }
 
-    delete(setup: TournamentSetup): void {
-        this.api.deleteSetup(setup.id).subscribe(res => {
-            console.log(res);
-            const index = this.dataSource.data.indexOf(setup);
-            this.setups.splice(index, 1);
-            this.dataSource.data = this.setups;
+    deleteSetup(setup: TournamentSetup): void {
+        const openedDialog = this.dialog.open(ConfirmDialogComponent, { data: { title: `Delete setup '${setup.title}'` } });
+        openedDialog.afterClosed().subscribe(isConfirmed => {
+            if (isConfirmed) {
+                this.api.deleteSetup(setup.id).subscribe(res => {
+                    console.log(res);
+                    const index = this.dataSource.data.indexOf(setup);
+                    this.setups.splice(index, 1);
+                    this.dataSource.data = this.setups;
+                });
+            }
         });
     }
 

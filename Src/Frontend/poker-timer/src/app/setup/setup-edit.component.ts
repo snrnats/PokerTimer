@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewEncapsulation, ViewChild } from "@angular/core";
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from "@angular/forms";
 import { ApiService } from "@app/api.service";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
@@ -6,22 +6,25 @@ import { switchMap } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { TournamentSetup } from "@app/models/tournament-setup.model";
 import { SetupLevel } from "@app/models/setup-level.model";
-import { MatTableDataSource } from "@angular/material";
+import { MatTableDataSource, MatTableModule, MatTable } from "@angular/material";
 
 @Component({
   selector: "app-setup-edit",
   templateUrl: "./setup-edit.component.html",
-  styleUrls: ["./setup-edit.component.css"]
+  styleUrls: ["./setup-edit.component.css"],
+  encapsulation: ViewEncapsulation.None
 })
 export class SetupEditComponent implements OnInit {
-
   setups: TournamentSetup[];
+
+  displayedColumns = ["title", "smallBlind", "bigBlind", "ante", "duration", "actions"];
   dataSource: MatTableDataSource<TournamentSetup>;
   private id: number;
   form: FormGroup;
+  levels: SetupLevel[];
   constructor(private fb: FormBuilder, private api: ApiService, private route: ActivatedRoute, private router: Router) { }
 
-  get levels(): FormArray {
+  get levelForms(): FormArray {
     return this.form.get("levels") as FormArray;
   }
 
@@ -42,6 +45,7 @@ export class SetupEditComponent implements OnInit {
       }));
     })).subscribe(res => {
       this.id = res.id;
+
       this.form = this.fb.group({
         title: [res.title, [Validators.required]],
         startingChips: [res.startingChips, [Validators.required]],
@@ -50,6 +54,7 @@ export class SetupEditComponent implements OnInit {
         blindMultiplier: [res.blindMultiplier, []],
         levels: this.fb.array(res.levels.map(this.getLevelGroup, this))
       });
+      this.levels = this.levelForms.value;
     });
   }
 
@@ -74,12 +79,14 @@ export class SetupEditComponent implements OnInit {
     }
   }
 
-  onAdded(): void {
-    this.levels.push(this.getLevelGroup({ duration: 0, smallBlind: 0, bigBlind: 0, ante: 0 }));
+  addLevel(): void {
+    this.levelForms.push(this.getLevelGroup({ duration: 0, smallBlind: 0, bigBlind: 0, ante: 0 }));
+    this.levels = this.levelForms.value;
   }
 
   removeLevel(index: number) {
-    this.levels.removeAt(index);
+    this.levelForms.removeAt(index);
+    this.levels = this.levelForms.value;
   }
 
 }

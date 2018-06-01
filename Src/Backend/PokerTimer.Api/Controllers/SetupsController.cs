@@ -27,6 +27,10 @@ namespace PokerTimer.Api.Controllers
         {
             var userId = User.GetUserId();
             var setups = _context.Setups.Include(s => s.Levels).Where(setup => setup.OwnerId == userId);
+            foreach(var setup in setups)
+            {
+                setup.Levels.Sort((x, y) => x.Index.CompareTo(y.Index));
+            }
             return setups;
         }
 
@@ -40,6 +44,7 @@ namespace PokerTimer.Api.Controllers
             }
 
             var setup = await _context.Setups.Include(s => s.Levels).SingleOrDefaultAsync(m => m.Id == id);
+            setup.Levels.Sort((x, y) => x.Index.CompareTo(y.Index));
 
             if (setup == null)
             {
@@ -64,16 +69,17 @@ namespace PokerTimer.Api.Controllers
                 return BadRequest();
             }
 
-            var storedSetup = await _context.Setups.FindAsync(id);
+            var storedSetup = await _context.Setups.AsNoTracking().Include(s => s.Levels).FirstOrDefaultAsync(s => s.Id==id);//.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
             var userId = User.GetUserId();
             if (storedSetup.OwnerId != userId)
             {
                 return BadRequest();
             }
+            _context.Set<Level>().RemoveRange(storedSetup.Levels);
 
-            _context.Entry(storedSetup).State = EntityState.Detached;
             setup.OwnerId = userId;
-            _context.Entry(setup).State = EntityState.Modified;
+            SetLevelIndexes(setup);
+            _context.Setups.Update(setup);
 
             try
             {
@@ -106,6 +112,7 @@ namespace PokerTimer.Api.Controllers
 
             var userId = User.GetUserId();
             setup.OwnerId = userId;
+            SetLevelIndexes(setup);
             _context.Setups.Add(setup);
             await _context.SaveChangesAsync();
 
@@ -143,6 +150,14 @@ namespace PokerTimer.Api.Controllers
         private bool SetupExists(int id)
         {
             return _context.Setups.Any(e => e.Id == id);
+        }
+
+        private void SetLevelIndexes(Setup setup)
+        {
+            for (int i = 0; i < setup.Levels.Count; i++)
+            {
+                setup.Levels[i].Index = i;
+            }
         }
     }
 }

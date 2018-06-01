@@ -4,7 +4,18 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 
-import { MatButtonModule, MatCheckboxModule, MatSelectModule, MatExpansionModule, MatTableModule, MatSortModule, MatIconModule, MatMenuModule } from "@angular/material";
+import {
+  MatButtonModule,
+  MatCheckboxModule,
+  MatSelectModule,
+  MatExpansionModule,
+  MatTableModule,
+  MatSortModule,
+  MatIconModule,
+  MatMenuModule,
+  MatDialogModule,
+  MAT_DIALOG_DEFAULT_OPTIONS
+} from "@angular/material";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatInputModule } from "@angular/material/input";
 import { MatCardModule } from "@angular/material/card";
@@ -28,6 +39,7 @@ import { SetupEditComponent } from "./setup/setup-edit.component";
 import { SetupsComponent } from "@app/setup/setups.component";
 import { SetupComponent } from "@app/setup/setup.component";
 import { PageNotFoundComponent } from "./page-not-found/page-not-found.component";
+import { ConfirmDialogComponent } from "./shared/confirm-dialog/confirm-dialog.component";
 /*
 Add visibility to setups and tournaments: only me (private), not listed (by id), public
 Handle server and network errors
@@ -46,7 +58,8 @@ Handle server and network errors
     SetupEditComponent,
     SetupsComponent,
     SetupComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -66,7 +79,8 @@ Handle server and network errors
     MatTableModule,
     MatSortModule,
     MatIconModule,
-    MatMenuModule
+    MatMenuModule,
+    MatDialogModule
   ],
   providers: [AuthService, ApiService, DatePipe,
     {
@@ -74,6 +88,9 @@ Handle server and network errors
       useClass: AuthInterceptor,
       multi: true
     }],
+  entryComponents: [
+    ConfirmDialogComponent
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

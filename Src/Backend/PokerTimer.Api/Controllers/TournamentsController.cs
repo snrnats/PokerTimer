@@ -52,6 +52,8 @@ namespace PokerTimer.Api.Controllers
                 return NotFound();
             }
 
+            tournament.Setup.Levels.Sort((x, y) => x.Index.CompareTo(y.Index));
+
             return Ok(tournament);
         }
 
