@@ -9,6 +9,7 @@ import { TournamentManager } from "@app/shared/tournament-manager";
 import { SetupLevel } from "@app/models/setup-level.model";
 import { TournamentStatus } from "@app/models/tournament-status.model";
 import { TournamentSetup } from "@app/models/tournament-setup.model";
+import { AuthService } from "@app/auth.service";
 
 @Component({
     selector: "app-setup",
@@ -16,8 +17,9 @@ import { TournamentSetup } from "@app/models/tournament-setup.model";
 })
 export class SetupComponent implements OnInit {
     setup: TournamentSetup;
-
-    constructor(private route: ActivatedRoute, private api: ApiService, private cdr: ChangeDetectorRef) { }
+    canEdit: boolean;
+    displayedColumns = ["title", "smallBlind", "bigBlind", "ante", "duration"];
+    constructor(private route: ActivatedRoute, private api: ApiService, private cdr: ChangeDetectorRef, private auth: AuthService) { }
 
     ngOnInit() {
         this.route.paramMap.pipe(switchMap((params: ParamMap) => {
@@ -26,6 +28,9 @@ export class SetupComponent implements OnInit {
         })).subscribe(res => {
             console.log(res);
             this.setup = res;
+            const userId = this.auth.getUserId();
+            this.canEdit = userId === res.ownerId;
+            this.canEdit = true;
         });
     }
 }

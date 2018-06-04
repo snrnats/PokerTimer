@@ -1,4 +1,4 @@
-<form *ngIf="form; else loading" [formGroup]="form" (ngSubmit)="submit()" class="content-container">
+<form *ngIf="form; else loading" [formGroup]="form" (ngSubmit)="submit()" >
     <mat-form-field class="fullWidth">
         <input matInput type="text" placeholder="Title" formControlName="title" />
     </mat-form-field>
@@ -23,7 +23,7 @@
         </button>
     </p>
 
-    <table *ngIf="levels.length > 0" mat-table style="margin: 0em -1.2em" [dataSource]="levels" formArrayName="levels">
+    <table *ngIf="levels.length > 0" mat-table class="mat-elevation-z8" [dataSource]="levels" formArrayName="levels">
         <ng-container matColumnDef="title">
             <th mat-header-cell *matHeaderCellDef> Index </th>
             <td mat-cell *matCellDef="let element; let m = index"> {{m}} </td>

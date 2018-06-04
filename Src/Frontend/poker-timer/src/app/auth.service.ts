@@ -3,14 +3,31 @@ import { HttpClient } from "@angular/common/http";
 import { Credentials } from "./models/credentials.model";
 import { Router } from "@angular/router";
 import { Config } from "@app/shared/config";
+import * as jwt_decode from "jwt-decode";
 
 @Injectable()
 export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) { }
 
+  private getToken() {
+    return localStorage.getItem("token");
+  }
+
   get isAuthenticated() {
-    return !!localStorage.getItem("token");
+    return !!this.getToken();
+  }
+
+  getUserId(): string {
+    const t = this.getToken();
+    if (t !== null) {
+      const data = jwt_decode(t);
+      console.log(data);
+      if (data.hasOwnProperty("sub")) {
+        return data["sub"];
+      }
+    }
+    return null;
   }
 
   register(credentials: Credentials) {

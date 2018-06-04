@@ -36,6 +36,7 @@ export class SetupEditComponent implements OnInit {
       }
       return new Observable<TournamentSetup>(sub => sub.next({
         id: null,
+        ownerId: null,
         title: null,
         startingChips: null,
         numberOfPlayers: null,

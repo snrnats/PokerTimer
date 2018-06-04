@@ -7,6 +7,7 @@ import { SetupLevel } from "@app/models/setup-level.model";
 import { from } from "rxjs";
 import { MatTableDataSource, MatSort, Sort, MatTable, MatDialog } from "@angular/material";
 import { ConfirmDialogComponent } from "@app/shared/confirm-dialog/confirm-dialog.component";
+import { Router } from "@angular/router";
 
 @Component({
     selector: "app-setups",
@@ -19,7 +20,7 @@ export class SetupsComponent implements OnInit {
     @ViewChild(MatSort) sort: MatSort;
     @ViewChild(MatTable) table: MatTable<TournamentSetup>;
     displayedColumns = ["title", "startingChips", "numberOfPlayers", "levelDuration", "initialBlinds", "actions"];
-    constructor(private api: ApiService, private cdr: ChangeDetectorRef, private dialog: MatDialog) {
+    constructor(private api: ApiService, private cdr: ChangeDetectorRef, private dialog: MatDialog, private router: Router) {
     }
 
     ngOnInit() {
@@ -60,6 +61,10 @@ export class SetupsComponent implements OnInit {
         return "";
     }
 
+    openSetupDetails(setup: TournamentSetup): void {
+        this.router.navigateByUrl(`/setups/${setup.id}`);
+    }
+
     deleteSetup(setup: TournamentSetup): void {
         const openedDialog = this.dialog.open(ConfirmDialogComponent, { data: { title: `Delete setup '${setup.title}'` } });
         openedDialog.afterClosed().subscribe(isConfirmed => {
@@ -72,6 +77,12 @@ export class SetupsComponent implements OnInit {
                 });
             }
         });
+    }
+
+    applyFilter(filterValue: string): void {
+        filterValue = filterValue.trim();
+        filterValue = filterValue.toLowerCase();
+        this.dataSource.filter = filterValue;
     }
 
 }
