@@ -34,10 +34,6 @@ table {
     width: 100%;
 }
 
-.mat-column-actions {
-    width: 1px
-}
-
 .multi-field {
     padding: 0em 0.5em 0em 0.5em
 }
@@ -63,14 +59,8 @@ table {
 }
 
 .prop-def {
-    display: block;
-    width: 13em;
-    float: left;
-    color: #333333;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 20px;
     text-transform: uppercase;
+    font-weight: bolder;
 }
 
 .prop-value {
@@ -86,6 +76,15 @@ ul {
     padding: 0em
 }
 
+.row {
+    display: block;
+}
+
+.padded-row {
+    display: block;
+    margin: 1em 0em 0em 0em;
+}
+
 .table-row:hover {
     background: #f5f5f5;
     cursor: pointer;
@@ -94,11 +93,60 @@ ul {
 .app-container {
     position: absolute;
     left: 0px;
-    top:0px;
+    top: 0px;
     right: 0px;
     bottom: 0px;
+    min-width: 300px;
 }
 
 .page-container {
-    padding: 0em 2em;
+    padding: 0.5em 1em 0em 1em;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mat-column-actions {
+    width: 1px !important;
+}
+
+mat-toolbar-row {
+    padding: 0em 1em !important;
+}
+
+[class*="col-"] {
+    display:inline-block;
+}
+
+.col-2 {
+    width: 16.66%;
+}
+
+.col-4 {
+    width: 33.33%;
+}
+
+.col-6 {
+    width: 50%;
+}
+
+.input-column {
+    padding: 0em 1em 0em 0em;
+}
+
+.input-column-last {
+    padding: 0em;
+}
+
+@media only screen and (min-width:600px) {
+    .page-container {
+        padding: 1em 2em 0em 2em;
+    }
+    mat-toolbar-row {
+        padding: 0em 2em !important;
+    }
+}
+
+* {
+    box-sizing: border-box;
 }

@@ -1,9 +1,21 @@
 <mat-toolbar color="primary" class="mat-elevation-z4 page-no-margin">
-  <span>Poker Timer</span>
-  <button mat-button routerLink="/tournaments">Tournament</button>
-  <button mat-button routerLink="/setups">Presets</button>
-  <span style="flex: 1 1 auto"></span>
-  <button *ngIf="!auth.isAuthenticated" mat-button routerLink="/register">Register</button>
-  <button *ngIf="!auth.isAuthenticated" mat-button routerLink="/login">Login</button>
-  <button *ngIf="auth.isAuthenticated" mat-button (click)="auth.logout()">Logout</button>
+
+  <mat-toolbar-row>
+    <span>Poker Timer</span>
+
+    <div class="nav-menu row">
+      <button mat-button routerLink="/tournaments">Tournament</button>
+      <button mat-button routerLink="/setups">Presets</button>
+    </div>
+    <span style="flex: 1 1 auto"></span>
+    <button *ngIf="!auth.isAuthenticated" mat-button routerLink="/register">Register</button>
+    <button *ngIf="!auth.isAuthenticated" mat-button routerLink="/login">Login</button>
+    <button *ngIf="auth.isAuthenticated" mat-button (click)="auth.logout()">Logout</button>
+
+  </mat-toolbar-row>
+
+  <mat-toolbar-row class="nav-menu-sm">
+    <button mat-button routerLink="/tournaments" style="flex:1">Tournament</button>
+    <button mat-button routerLink="/setups" style="flex: 1">Presets</button>
+  </mat-toolbar-row>
 </mat-toolbar>

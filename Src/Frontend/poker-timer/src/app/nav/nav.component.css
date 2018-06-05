@@ -1,0 +1,18 @@
+.nav-menu {
+    display: none;
+}
+
+.nav-menu-sm {
+    display: flex;
+}
+
+
+@media only screen and (min-width:600px) {
+    .nav-menu {
+        display: initial;
+    }
+    
+    .nav-menu-sm {
+        display: none;
+    }   
+}

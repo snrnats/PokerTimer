@@ -1,26 +1,30 @@
-<div *ngIf="setup; else loading" >
-    <ul class="prop-list">
+<div *ngIf="setup; else loading">
+    <div class="row">
+        <span class="mat-headline">{{setup.title}}</span>
+    </div>
+    <div>
+        <p class="mat-body-2">Number of players: {{setup.numberOfPlayers}}</p>
+        <p class="mat-body-2">Is infinite: {{setup.isInfinite}}</p>
+        <p *ngIf="setup.isInfinite" class="mat-body-2">Blind multiplier: {{setup.blindMultiplier}}</p>
+    </div>
+    <!--<ul class="prop-list">
         <li class="prop-item">
-            <strong class="prop-def">Title</strong>
-            <span class="prop-value">{{setup.title}}</span>
+            <strong class="col-2 mat-body-2 prop-def">Starting chips</strong>
+            <span class="col-2 mat-body-1">{{setup.startingChips}}</span>
         </li>
         <li class="prop-item">
-            <strong class="prop-def">Starting chips</strong>
-            <span class="prop-value">{{setup.startingChips}}</span>
+            <strong class="col-2 mat-body-2">Number of players</strong>
+            <span class="col-2 mat-body-1">{{setup.numberOfPlayers}}</span>
         </li>
         <li class="prop-item">
-            <strong class="prop-def">Number of players</strong>
-            <span class="prop-value">{{setup.numberOfPlayers}}</span>
-        </li>
-        <li class="prop-item">
-            <strong class="prop-def">Is infinite</strong>
-            <span class="prop-value">{{setup.isInfinite}}</span>
+            <strong class="col-2 mat-body-2">Is infinite</strong>
+            <span class="col-2 mat-body-1">{{setup.isInfinite}}</span>
         </li>
         <li *ngIf="setup.isInfinite" class="prop-item">
-            <strong class="prop-def">Blind multiplier</strong>
-            <span class="prop-value">{{setup.blindMultiplier}}</span>
+            <strong class="col-2 mat-body-2">Blind multiplier</strong>
+            <span class="col-2 mat-body-1">{{setup.blindMultiplier}}</span>
         </li>
-    </ul>
+    </ul>-->
 
     <table *ngIf="setup.levels.length > 0" mat-table class="mat-elevation-z8" [dataSource]="setup.levels">
         <ng-container matColumnDef="title">
