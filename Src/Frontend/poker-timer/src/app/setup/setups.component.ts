@@ -2,12 +2,12 @@ import { Component, OnInit, ViewChild, ChangeDetectorRef } from "@angular/core";
 import { ApiService } from "@app/api.service";
 import { Tournament } from "@app/models/tournament.model";
 import { TournamentSetup } from "@app/models/tournament-setup.model";
-import { max, min } from "rxjs/operators";
+import { max, min, switchMap } from "rxjs/operators";
 import { SetupLevel } from "@app/models/setup-level.model";
 import { from } from "rxjs";
 import { MatTableDataSource, MatSort, Sort, MatTable, MatDialog } from "@angular/material";
 import { ConfirmDialogComponent } from "@app/shared/confirm-dialog/confirm-dialog.component";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute, ParamMap } from "@angular/router";
 
 @Component({
     selector: "app-setups",
@@ -20,12 +20,17 @@ export class SetupsComponent implements OnInit {
     @ViewChild(MatSort) sort: MatSort;
     @ViewChild(MatTable) table: MatTable<TournamentSetup>;
     displayedColumns = ["title", "startingChips", "numberOfPlayers", "levelDuration", "initialBlinds", "actions"];
-    constructor(private api: ApiService, private cdr: ChangeDetectorRef, private dialog: MatDialog, private router: Router) {
+    constructor(private api: ApiService, private cdr: ChangeDetectorRef, private dialog: MatDialog,
+        private router: Router, private route: ActivatedRoute) {
+        this.dataSource = new MatTableDataSource();
     }
 
     ngOnInit() {
-        this.api.getSetups().subscribe(res => {
-            this.dataSource = new MatTableDataSource(res);
+        this.route.queryParamMap.pipe(switchMap((params: ParamMap) => {
+            const owner = params.get("owner");
+            return this.api.getSetups(owner);
+        })).subscribe(res => {
+            this.dataSource.data = res;
             const defaultAccessor = this.dataSource.sortingDataAccessor;
             this.dataSource.sortingDataAccessor = ((data: TournamentSetup, sortHeaderId: string) => {
                 switch (sortHeaderId) {

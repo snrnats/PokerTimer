@@ -16,7 +16,9 @@ import {
   MatDialogModule,
   MAT_DIALOG_DEFAULT_OPTIONS,
   MatListModule,
-  MatRippleModule
+  MatRippleModule,
+  MatTabsModule,
+  MatButtonToggleModule
 } from "@angular/material";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatInputModule } from "@angular/material/input";
@@ -83,7 +85,8 @@ Handle server and network errors
     MatIconModule,
     MatMenuModule,
     MatDialogModule,
-    MatRippleModule
+    MatTabsModule,
+    MatButtonToggleModule
   ],
   providers: [AuthService, ApiService, DatePipe,
     {

@@ -53,8 +53,8 @@ export class ApiService {
     return this.http.put(tournamentsEndpoint + `${tournament.id}`, tournament).pipe(catchError(this.handleError));
   }
 
-  getSetups(): Observable<TournamentSetup[]> {
-    return this.http.get(setupsEndpoint, { responseType: "text" }).
+  getSetups(owner: string): Observable<TournamentSetup[]> {
+    return this.http.get(setupsEndpoint, { responseType: "text", params: { owner: owner } }).
       pipe(retry(3), catchError(this.handleError), map(res => JSON.parse(res, JsonRevivers.date)));
   }
 

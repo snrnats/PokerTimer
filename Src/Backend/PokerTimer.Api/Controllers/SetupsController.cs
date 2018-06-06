@@ -23,10 +23,14 @@ namespace PokerTimer.Api.Controllers
         // GET: api/Setups
         [Authorize]
         [HttpGet]
-        public IEnumerable<Setup> GetSetup()
+        public IEnumerable<Setup> GetSetup([FromQuery] SetupOwnerFilter owner)
         {
             var userId = User.GetUserId();
-            var setups = _context.Setups.Include(s => s.Levels).Where(setup => setup.OwnerId == userId);
+            IQueryable<Setup> setups = _context.Setups.Include(s => s.Levels);
+            if (owner == SetupOwnerFilter.Me)
+            {
+                setups = setups.Where(setup => setup.OwnerId == userId);
+            }
             foreach(var setup in setups)
             {
                 setup.Levels.Sort((x, y) => x.Index.CompareTo(y.Index));

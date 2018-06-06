@@ -41,7 +41,7 @@ namespace PokerTimer.Api
 
             var setup2 = new Setup();
             setup2.Title = "Fast setup";
-            setup2.OwnerId = user.Id;
+            setup2.OwnerId = guest.Id;
             setup2.StartingChips = 3000;
             setup2.NumberOfPlayers = 6;
             setup2.Levels = new List<Level>();

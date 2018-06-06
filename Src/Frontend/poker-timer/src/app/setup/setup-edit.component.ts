@@ -7,6 +7,8 @@ import { Observable } from "rxjs";
 import { TournamentSetup } from "@app/models/tournament-setup.model";
 import { SetupLevel } from "@app/models/setup-level.model";
 import { MatTableDataSource, MatTableModule, MatTable } from "@angular/material";
+import { CustomValidators } from "@app/shared/validators";
+import { ImmediateErrorMatcher } from "@app/shared/immediate-error-matcher";
 
 @Component({
   selector: "app-setup-edit",
@@ -16,6 +18,7 @@ import { MatTableDataSource, MatTableModule, MatTable } from "@angular/material"
 })
 export class SetupEditComponent implements OnInit {
   setups: TournamentSetup[];
+  immediateErrorMatchar: ImmediateErrorMatcher = new ImmediateErrorMatcher();
 
   displayedColumns = ["title", "smallBlind", "bigBlind", "ante", "duration", "actions"];
   dataSource: MatTableDataSource<TournamentSetup>;
@@ -41,7 +44,7 @@ export class SetupEditComponent implements OnInit {
         startingChips: null,
         numberOfPlayers: null,
         isInfinite: false,
-        blindMultiplier: null,
+        infiniteMultiplier: null,
         levels: []
       }));
     })).subscribe(res => {
@@ -52,9 +55,10 @@ export class SetupEditComponent implements OnInit {
         startingChips: [res.startingChips, [Validators.required]],
         numberOfPlayers: [res.numberOfPlayers, [Validators.required]],
         isInfinite: [res.isInfinite, [Validators.required]],
-        blindMultiplier: [res.blindMultiplier, []],
-        levels: this.fb.array(res.levels.map(this.getLevelGroup, this))
+        infiniteMultiplier: [res.infiniteMultiplier, []],
+        levels: this.fb.array(res.levels.map(this.getLevelGroup, this), [Validators.required])
       });
+      this.form.get("infiniteMultiplier").setValidators([CustomValidators.optionalValidation("isInfinite", (v) => v, Validators.required)]);
       this.levels = this.levelForms.value;
     });
   }

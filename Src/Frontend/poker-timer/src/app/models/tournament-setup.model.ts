@@ -7,6 +7,6 @@ export interface TournamentSetup {
     startingChips: number;
     numberOfPlayers: number;
     isInfinite: boolean;
-    blindMultiplier: number;
+    infiniteMultiplier: number;
     levels: SetupLevel[];
 }

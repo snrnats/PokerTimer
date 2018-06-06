@@ -1,20 +1,24 @@
 <form *ngIf="form; else loading" [formGroup]="form" (ngSubmit)="submit()">
     <mat-form-field class="fullWidth">
         <input matInput type="text" placeholder="Title" formControlName="title" />
+        <mat-error>Title is required</mat-error>
     </mat-form-field>
 
     <mat-form-field class="col-6 input-column">
         <input matInput type="number" placeholder="Starting chips" formControlName="startingChips" />
+        <mat-error>Starting chips is required</mat-error>
     </mat-form-field>
 
     <mat-form-field class="col-6 input-column-last">
         <input matInput type="number" placeholder="Number of players" formControlName="numberOfPlayers" />
+        <mat-error>Number of players is required</mat-error>
     </mat-form-field>
 
     <mat-checkbox class="col-6" formControlName="isInfinite">Is infinite</mat-checkbox>
 
     <mat-form-field class="col-6" [style.visibility]="form.value.isInfinite?'visible':'hidden'">
-        <input matInput type="number" placeholder="Blind multiplier" formControlName="numberOfPlayers" />
+        <input matInput type="number" placeholder="Blind multiplier" formControlName="infiniteMultiplier" [errorStateMatcher]="immediateErrorMatchar">
+        <mat-error>Blind multiplier is required</mat-error>
     </mat-form-field>
 
     <div class="mat-title " style="margin-top: 1em"> Levels </div>

@@ -5,26 +5,8 @@
     <div>
         <p class="mat-body-2">Number of players: {{setup.numberOfPlayers}}</p>
         <p class="mat-body-2">Is infinite: {{setup.isInfinite}}</p>
-        <p *ngIf="setup.isInfinite" class="mat-body-2">Blind multiplier: {{setup.blindMultiplier}}</p>
+        <p *ngIf="setup.isInfinite" class="mat-body-2">Blind multiplier: {{setup.infiniteMultiplier}}</p>
     </div>
-    <!--<ul class="prop-list">
-        <li class="prop-item">
-            <strong class="col-2 mat-body-2 prop-def">Starting chips</strong>
-            <span class="col-2 mat-body-1">{{setup.startingChips}}</span>
-        </li>
-        <li class="prop-item">
-            <strong class="col-2 mat-body-2">Number of players</strong>
-            <span class="col-2 mat-body-1">{{setup.numberOfPlayers}}</span>
-        </li>
-        <li class="prop-item">
-            <strong class="col-2 mat-body-2">Is infinite</strong>
-            <span class="col-2 mat-body-1">{{setup.isInfinite}}</span>
-        </li>
-        <li *ngIf="setup.isInfinite" class="prop-item">
-            <strong class="col-2 mat-body-2">Blind multiplier</strong>
-            <span class="col-2 mat-body-1">{{setup.blindMultiplier}}</span>
-        </li>
-    </ul>-->
 
     <table *ngIf="setup.levels.length > 0" mat-table class="mat-elevation-z8" [dataSource]="setup.levels">
         <ng-container matColumnDef="title">
