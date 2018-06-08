@@ -6,6 +6,7 @@ import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { switchMap } from "rxjs/operators";
 import { Observable, Subscriber } from "rxjs";
 import { Tournament } from "@app/models/tournament.model";
+import { SetupOwnerFilter } from "@app/api/setup-owner-filter";
 
 @Component({
   selector: "app-tournament-edit",
@@ -42,13 +43,13 @@ export class TournamentEditComponent implements OnInit {
         setupId: [res.setup !== null ? res.setup.id : null, [Validators.required]]
       });
     });
-    this.api.getSetups().subscribe(res => this.setups = res);
+    this.api.getSetups(SetupOwnerFilter.Me).subscribe(res => this.setups = res);
   }
 
   submit(): void {
     if (this.id !== null) {
       this.api.updateTournament(Object.assign({ id: this.id }, this.form.value)).subscribe(res => {
-        this.router.navigateByUrl(`/tournaments/${this.id}`)
+        this.router.navigateByUrl(`/tournaments/${this.id}`);
       });
     } else {
       this.api.createTournament(this.form.value).subscribe(res => {

@@ -7,6 +7,7 @@ import { JsonRevivers } from "@app/shared/json-revivers";
 import { Observable, throwError, ObservableInput } from "rxjs";
 import { Config } from "@app/shared/config";
 import { TournamentSetup } from "@app/models/tournament-setup.model";
+import { SetupOwnerFilter } from "@app/api/setup-owner-filter";
 
 const baseUrl = Config.backendUrl + "api/";
 const tournamentsEndpoint = baseUrl + "tournaments/";

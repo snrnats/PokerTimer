@@ -4,10 +4,12 @@ import { Tournament } from "@app/models/tournament.model";
 import { TournamentSetup } from "@app/models/tournament-setup.model";
 import { max, min, switchMap } from "rxjs/operators";
 import { SetupLevel } from "@app/models/setup-level.model";
-import { from } from "rxjs";
+import { from, Observable, empty } from "rxjs";
 import { MatTableDataSource, MatSort, Sort, MatTable, MatDialog } from "@angular/material";
 import { ConfirmDialogComponent } from "@app/shared/confirm-dialog/confirm-dialog.component";
 import { Router, ActivatedRoute, ParamMap } from "@angular/router";
+import { SetupOwnerFilter } from "@app/api/setup-owner-filter";
+import { query } from "@angular/animations";
 
 @Component({
     selector: "app-setups",
@@ -28,7 +30,12 @@ export class SetupsComponent implements OnInit {
     ngOnInit() {
         this.route.queryParamMap.pipe(switchMap((params: ParamMap) => {
             const owner = params.get("owner");
-            return this.api.getSetups(owner);
+            if (owner === null) {
+                this.router.navigate(["."], { relativeTo: this.route, queryParams: { "owner": SetupOwnerFilter.Me } });
+                return empty();
+            } else {
+                return this.api.getSetups(owner);
+            }
         })).subscribe(res => {
             this.dataSource.data = res;
             const defaultAccessor = this.dataSource.sortingDataAccessor;

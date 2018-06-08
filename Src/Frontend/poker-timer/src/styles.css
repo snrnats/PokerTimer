@@ -115,7 +115,7 @@ mat-toolbar-row {
 }
 
 [class*="col-"] {
-    display:inline-block;
+    display: inline-block;
 }
 
 .col-2 {
@@ -149,4 +149,23 @@ mat-toolbar-row {
 
 * {
     box-sizing: border-box;
+}
+
+.center-horizontal-transform {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%)
+}
+
+.center-vertical-transform {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%)
+}
+
+.center-transform {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
 }

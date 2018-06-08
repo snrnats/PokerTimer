@@ -1,22 +1,47 @@
-<content *ngIf="status !== undefined">
-    <h3>{{ tournament.title }}</h3>
+<div class="center-horizontal-transform" *ngIf="status !== undefined">
+    <h3 class="mat-display-1">{{ tournament.title }}</h3>
     <ng-container [ngSwitch]="status.progress">
         <div *ngSwitchCase="TournamentProgress.NotStarted"> Starting at {{tournament.startDate}} </div>
         <ng-container *ngSwitchCase="TournamentProgress.Finished">
             <div> Finished </div>
         </ng-container>
         <ng-container *ngSwitchCase="TournamentProgress.OnGoing">
-            {{status.progress}}
-            <mat-progress-spinner mode="determinate" [value]="status.levelProgress">
-            </mat-progress-spinner>
-            <div style="position:relative; top: -60px; left: 30px;">
-                {{status.levelTimeLeft|timeSpan}}
+            <div style="position: relative;">
+                <mat-progress-spinner diameter="400" style="margin: 0px auto; width: 300px;height: 300px;" mode="determinate" [value]="status.levelProgress">
+                </mat-progress-spinner>
+                <div class="center-transform mat-display-3" style="color: #3f51b5">
+                    {{status.levelTimeLeft|timeSpan}}
+                </div>
             </div>
-            <div *ngIf="status.level">
-                Small: {{status.level.smallBlind}} Big: {{status.level.bigBlind}}
+
+            <div style="display: flex;justify-content: space-evenly;text-align: center;margin-top: 1em">
+                <div>
+                    <p class="mat-title">Small:</p>
+                    <p class="mat-body-2">
+                        {{status.level.smallBlind}}
+                    </p>
+                </div>
+                <div class="divider"></div>
+                <div>
+                    <p class="mat-title">Big:
+                    </p>
+                    <p class="mat-body-2">
+                        {{status.level.bigBlind}}
+                    </p>
+                </div>
+                <div class="divider"></div>
+                <div>
+                    <p class="mat-title">Ante:
+                    </p>
+                    <p class="mat-body-2">
+                        {{status.level.ante}}
+
+                    </p>
+                </div>
             </div>
-            <button *ngIf="!isPaused" mat-raised-button color="primary" (click)="onPaused()">Pause</button>
-            <button *ngIf="isPaused" mat-raised-button color="primary" (click)="onResumed()">Resume</button>
+            <button *ngIf="!isPaused" mat-button color="primary" (click)="onPaused()">PAUSE</button>
+            <button *ngIf="isPaused" mat-button color="primary" (click)="onResumed()">RESUME</button>
+            <button mat-button color="primary" routerLink="/setups/{{tournament.setup.id}}">SETUP DETAILS</button>
         </ng-container>
     </ng-container>
-</content>
+</div>
