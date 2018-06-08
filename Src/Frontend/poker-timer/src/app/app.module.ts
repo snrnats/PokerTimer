@@ -86,7 +86,8 @@ Handle server and network errors
     MatMenuModule,
     MatDialogModule,
     MatTabsModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    MatListModule
   ],
   providers: [AuthService, ApiService, DatePipe,
     {
