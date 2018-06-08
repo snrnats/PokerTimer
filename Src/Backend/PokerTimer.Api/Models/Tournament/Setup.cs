@@ -15,7 +15,7 @@ namespace PokerTimer.Api.Models.Tournament
         public int NumberOfPlayers { get; set; }
 
         public bool IsInfinite { get; set; }
-        public float InfiniteMultiplier { get; set; }
+        public float? InfiniteMultiplier { get; set; }
 
         public List<Level> Levels { get; set; }
     }
