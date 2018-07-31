@@ -172,3 +172,8 @@ mat-toolbar-row {
 .primary-color {
     color: #3f51b5
 }
+
+a.link {
+    text-decoration: none;
+    color: white;
+}
