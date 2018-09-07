@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using PokerTimer.Api.Utils.JsonConverters;
 
@@ -27,6 +28,7 @@ namespace PokerTimer.Api.Models.Tournament
         public int SetupId { get; set; }
         [JsonConverter(typeof(TimeSpanJsonConverter), TimeSpan.TicksPerSecond)]
         public TimeSpan Duration { get; set; }
+        [Range(1,100)]
         public int SmallBlind { get; set; }
         public int BigBlind { get; set; }
         public int Ante { get; set; }

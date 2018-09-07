@@ -1,11 +1,15 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using PokerTimer.Api.Models;
+using PokerTimer.Api.Auth;
+using PokerTimer.Api.Filters;
+using PokerTimer.Api.ViewModel;
 
 namespace PokerTimer.Api.Controllers
 {
@@ -13,10 +17,11 @@ namespace PokerTimer.Api.Controllers
     [Route("api/account")]
     public class AccountController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<PokerUser> _userManager;
+        private readonly SignInManager<PokerUser> _signInManager;
+        private static readonly TimeSpan AccessTokenLifeTime = TimeSpan.FromMinutes(30);
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountController(UserManager<PokerUser> userManager, SignInManager<PokerUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -25,7 +30,8 @@ namespace PokerTimer.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] Credentials credentials)
         {
-            var user = new IdentityUser() {UserName = credentials.Email, Email = credentials.Email};
+            var refreshToken = Guid.NewGuid().ToString();
+            var user = new PokerUser() {UserName = credentials.Email, Email = credentials.Email, RefreshToken = refreshToken};
 
             var result = await _userManager.CreateAsync(user, credentials.Password);
 
@@ -35,11 +41,38 @@ namespace PokerTimer.Api.Controllers
             }
 
             await _signInManager.SignInAsync(user, false);
-
+            
             return Ok(CreateToken(user));
         }
 
-        private string CreateToken(IdentityUser user)
+        [HttpPost("token")]
+        public async Task<IActionResult> SignIn([FromBody] AccessTokenRequest credentials)
+        {
+            var result = await _signInManager.PasswordSignInAsync(credentials.Username, credentials.Password, false, false);
+            if (!result.Succeeded)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByNameAsync(credentials.Username);
+            
+            return Ok(CreateToken(user));
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshAccessTokenRequest credentials)
+        {
+            var currentUser = await _userManager.FindByIdAsync(credentials.UserId);
+            if (currentUser.RefreshToken != credentials.RefreshToken)
+            {
+                return BadRequest("Invalid refresh_token");
+            }
+
+            return Ok(CreateToken(currentUser));
+        }
+
+
+        private AccessTokenResponse CreateToken(PokerUser user)
         {
             var claims = new Claim[]
             {
@@ -48,25 +81,11 @@ namespace PokerTimer.Api.Controllers
 
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is the secret phrase"));
             var signingCredential = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
-            var jwt = new JwtSecurityToken(signingCredentials: signingCredential, claims: claims);
-            return new JwtSecurityTokenHandler().WriteToken(jwt);
+            var expireDate = DateTimeOffset.UtcNow.Add(AccessTokenLifeTime);
+            var jwt = new JwtSecurityToken(signingCredentials: signingCredential, claims: claims, expires: expireDate.UtcDateTime);
+            var token = new JwtSecurityTokenHandler().WriteToken(jwt);
+            return new AccessTokenResponse(token, expireDate.ToUnixTimeSeconds(), user.RefreshToken, user.Id);
         }
-
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] Credentials credentials)
-        {
-            var result = await _signInManager.PasswordSignInAsync(credentials.Email, credentials.Password, false, false);
-
-            if (!result.Succeeded)
-            {
-                return BadRequest();
-            }
-
-            var user = await _userManager.FindByEmailAsync(credentials.Email);
-
-            return Ok(CreateToken(user));
-        }
-
         [HttpPost("loginAnonymous")]
         public async Task<IActionResult> LoginAnonymous([FromBody] AnonymousCredentials credentials)
         {
@@ -74,7 +93,7 @@ namespace PokerTimer.Api.Controllers
 
             if (existingUser == null)
             {
-                var user = new IdentityUser(credentials.DeviceId);
+                var user = new PokerUser(){UserName = credentials.DeviceId};
                 var result = await _userManager.CreateAsync(user);
 
                 if (!result.Succeeded)

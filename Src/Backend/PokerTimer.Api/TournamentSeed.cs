@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using PokerTimer.Api.Auth;
 using PokerTimer.Api.Models.Tournament;
 
 namespace PokerTimer.Api
@@ -12,12 +13,12 @@ namespace PokerTimer.Api
     {
         public async Task SeedAsync(TournomentContext context, IServiceProvider services, object logger, object settings)
         {
-            var user = new IdentityUser("a@a.aa") {Email = "a@a.aa"};
-            var userManager = services.GetService<UserManager<IdentityUser>>();
+            var user = new PokerUser("a@a.aa") {Email = "a@a.aa", RefreshToken = "refreshtoken1"};
+            var userManager = services.GetService<UserManager<PokerUser>>();
             var creaing = await userManager.CreateAsync(user, "Abc123!");
             Debug.Assert(creaing.Succeeded);
 
-            var guest = new IdentityUser("b@b.bb") { Email = "b@b.bb" };
+            var guest = new PokerUser("b@b.bb") { Email = "b@b.bb", RefreshToken = "refreshtoken2"};
             creaing = await userManager.CreateAsync(guest, "Abc123!");
             Debug.Assert(creaing.Succeeded);
 

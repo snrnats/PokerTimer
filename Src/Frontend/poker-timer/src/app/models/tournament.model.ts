@@ -1,4 +1,4 @@
-import { TournamentSetup } from "@app/models//tournament-setup.model";
+import { TournamentSetup } from "@app/models/tournament-setup.model";
 
 export interface Tournament {
     id: number;
