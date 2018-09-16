@@ -33,7 +33,7 @@ import { AppRoutingModule } from "@app/app-routing.module";
 import { AuthService } from "@app/auth.service";
 import { ApiService } from "@app/api.service";
 import { TournamentsComponent } from "@app/tournament/tournaments.component";
-import { AuthInterceptor } from "@app/auth.interceptor";
+import { AuthInterceptor } from "@app/auth/auth.interceptor";
 import { TournamentComponent } from "@app/tournament/tournament.component";
 import { TimeSpanPipe } from "@app/pipes/time-span.pipe";
 import { TournamentEditComponent } from "@app/tournament/tournament-edit.component";

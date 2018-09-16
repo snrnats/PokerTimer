@@ -1,25 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using PokerTimer.Api.Auth;
-using PokerTimer.Api.Filters;
+using PokerTimer.Api.Exceptions;
 using PokerTimer.Api.ViewModel;
 
 namespace PokerTimer.Api.Controllers
 {
     [Produces("application/json")]
     [Route("api/account")]
+    [ApiController]
     public class AccountController : Controller
     {
-        private readonly UserManager<PokerUser> _userManager;
-        private readonly SignInManager<PokerUser> _signInManager;
         private static readonly TimeSpan AccessTokenLifeTime = TimeSpan.FromMinutes(30);
+        private readonly SignInManager<PokerUser> _signInManager;
+        private readonly UserManager<PokerUser> _userManager;
 
         public AccountController(UserManager<PokerUser> userManager, SignInManager<PokerUser> signInManager)
         {
@@ -28,55 +31,78 @@ namespace PokerTimer.Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] Credentials credentials)
+        public async Task<AccessTokenResponse> Register([FromBody] Credentials credentials)
         {
             var refreshToken = Guid.NewGuid().ToString();
-            var user = new PokerUser() {UserName = credentials.Email, Email = credentials.Email, RefreshToken = refreshToken};
+            var user = new PokerUser {UserName = credentials.Username, Email = credentials.Username, RefreshToken = refreshToken};
 
             var result = await _userManager.CreateAsync(user, credentials.Password);
 
             if (!result.Succeeded)
             {
-                return BadRequest(result.Errors);
+                throw new UnprocessableEntryException(ErrorCode.CantSignUp, JsonConvert.SerializeObject(GetErrorResponse(result)));
             }
 
             await _signInManager.SignInAsync(user, false);
-            
-            return Ok(CreateToken(user));
+
+            return CreateToken(user);
+        }
+
+        private static ErrorResponse GetErrorResponse(IdentityResult identityResult)
+        {
+            if (!identityResult.Succeeded)
+            {
+                var items = new List<ValidationErrorItem>();
+                foreach (var error in identityResult.Errors)
+                {
+                    if (error.Code == nameof(IdentityErrorDescriber.DuplicateUserName))
+                    {
+                        var item = new ValidationErrorItem(nameof(Credentials.Username), error.Description);
+                        items.Add(item);
+                    }
+                }
+
+                if (items.Any())
+                {
+                    return new ValidationErrorResponse(ErrorCode.ValidationError, "Failed to register", items);
+                }
+            }
+
+            return new ErrorResponse(ErrorCode.CantSignUp, "Failed to register");
         }
 
         [HttpPost("token")]
-        public async Task<IActionResult> SignIn([FromBody] AccessTokenRequest credentials)
+        public async Task<AccessTokenResponse> SignIn([FromBody] Credentials credentials)
         {
             var result = await _signInManager.PasswordSignInAsync(credentials.Username, credentials.Password, false, false);
             if (!result.Succeeded)
             {
-                return BadRequest();
+                throw new UnprocessableEntryException(ErrorCode.CantSignIn, result.ToString());
             }
 
             var user = await _userManager.FindByNameAsync(credentials.Username);
-            
-            return Ok(CreateToken(user));
+
+            return CreateToken(user);
         }
 
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshAccessTokenRequest credentials)
+        public async Task<AccessTokenResponse> RefreshToken([FromBody] RefreshAccessTokenRequest credentials)
         {
             var currentUser = await _userManager.FindByIdAsync(credentials.UserId);
             if (currentUser.RefreshToken != credentials.RefreshToken)
             {
-                return BadRequest("Invalid refresh_token");
+                throw new UnprocessableEntryException(ErrorCode.InvalidRefreshToken, "Invalid refresh token");
             }
 
-            return Ok(CreateToken(currentUser));
+            return CreateToken(currentUser);
         }
 
 
         private AccessTokenResponse CreateToken(PokerUser user)
         {
-            var claims = new Claim[]
+            var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id)
             };
 
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is the secret phrase"));
@@ -86,6 +112,7 @@ namespace PokerTimer.Api.Controllers
             var token = new JwtSecurityTokenHandler().WriteToken(jwt);
             return new AccessTokenResponse(token, expireDate.ToUnixTimeSeconds(), user.RefreshToken, user.Id);
         }
+
         [HttpPost("loginAnonymous")]
         public async Task<IActionResult> LoginAnonymous([FromBody] AnonymousCredentials credentials)
         {
@@ -93,7 +120,7 @@ namespace PokerTimer.Api.Controllers
 
             if (existingUser == null)
             {
-                var user = new PokerUser(){UserName = credentials.DeviceId};
+                var user = new PokerUser {UserName = credentials.DeviceId};
                 var result = await _userManager.CreateAsync(user);
 
                 if (!result.Succeeded)

@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using PokerTimer.Api.Auth;
 using PokerTimer.Api.Filters;
+using PokerTimer.Api.Middlewares;
 
 namespace PokerTimer.Api
 {
@@ -59,12 +60,14 @@ namespace PokerTimer.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseAuthentication();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+            
+            app.UseAuthentication();
 
             app.UseCors("cors");
 

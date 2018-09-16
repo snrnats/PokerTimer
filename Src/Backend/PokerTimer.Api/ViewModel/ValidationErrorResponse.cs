@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using PokerTimer.Api.Exceptions;
+using PokerTimer.Api.Extensions;
 
 namespace PokerTimer.Api.ViewModel
 {
-    public class ValidationErrorResponse:ErrorResponse
+    public class ValidationErrorResponse : ErrorResponse
     {
-        public ValidationErrorResponse(int code, string message) : base(code, message)
+        public ValidationErrorResponse(ErrorCode code, string message, IEnumerable<ValidationErrorItem> errors) : base(code, message)
         {
+            Errors = errors.ToReadOnly();
         }
 
-
+        public ReadOnlyCollection<ValidationErrorItem> Errors { get; }
     }
 }

@@ -13,13 +13,14 @@ namespace PokerTimer.Api.ViewModel
             TokenType = JwtBearerDefaults.AuthenticationScheme;
         }
 
-        public string AccessToken { get; set; }
+        public string AccessToken { get; }
 
-        public string TokenType { get; set; }
+        public string TokenType { get; }
 
-        public long Expires { get; set; }
+        public long Expires { get; }
 
-        public string RefreshToken { get; set; }
-        public string UserId { get; set; }
+        public string RefreshToken { get; }
+
+        public string UserId { get; }
     }
 }

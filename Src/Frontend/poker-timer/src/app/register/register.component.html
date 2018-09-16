@@ -1,3 +1,9 @@
-<p>
-  register works!
-</p>
+<form [formGroup]="form" (ngSubmit)="auth.register(form.value)">
+  <mat-form-field class="fullWidth">
+    <input matInput type="email" name="email" placeholder="Email" formControlName="username">
+  </mat-form-field>
+  <mat-form-field class="fullWidth">
+    <input matInput type="password" name="password" placeholder="Password" formControlName="password">
+  </mat-form-field>
+  <button mat-raised-button color="primary" type="submit" [disabled]="!form.valid">Register</button>
+</form>

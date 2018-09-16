@@ -1,14 +1,16 @@
-﻿namespace PokerTimer.Api.ViewModel
+﻿using PokerTimer.Api.Exceptions;
+
+namespace PokerTimer.Api.ViewModel
 {
     public class ErrorResponse
     {
-        public ErrorResponse(int code, string message)
+        public ErrorResponse(ErrorCode code, string message)
         {
             Code = code;
             Message = message;
         }
 
-        public int Code { get; }
+        public ErrorCode Code { get; }
         public string Message { get; }
     }
 }

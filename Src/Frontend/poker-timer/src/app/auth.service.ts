@@ -5,15 +5,12 @@ import { Router } from "@angular/router";
 import { Config } from "@app/shared/config";
 import * as jwt_decode from "jwt-decode";
 import { AccessTokenResponse } from "@app/auth/model/access-token-response";
-import { Observable } from "rxjs";
-import { catchError } from "../../node_modules/rxjs/operators";
+import { IErrorResponse } from "@app/api/error-response";
 
 @Injectable()
 export class AuthService {
-
   private static readonly AccessTokenKey = "accessTokenResponse";
-  constructor(private http: HttpClient, private router: Router) { }
-
+  constructor(private http: HttpClient, private router: Router) {}
 
   get isAuthenticated(): boolean {
     return Boolean(this.getToken());
@@ -36,10 +33,16 @@ export class AuthService {
     return null;
   }
 
-  register(credentials: Credentials): void {
-    this.http.post<AccessTokenResponse>(Config.backendUrl + `api/account/register`, credentials, ).subscribe(res => {
-      this.authenticate(res);
-    });
+  async register(credentials: Credentials): Promise<AccessTokenResponse | IErrorResponse> {
+    try {
+      const accessToken = await this.http.post<AccessTokenResponse>(Config.backendUrl + `api/account/register`, credentials).toPromise();
+      this.authenticate(accessToken);
+      return accessToken;
+    } catch (e) {
+      if (e instanceof HttpErrorResponse && e.status === 422) {
+        return <IErrorResponse>JSON.parse(e.message);
+      }
+    }
   }
 
   login(credentials: Credentials): void {
@@ -49,27 +52,34 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem("token");
-
+    localStorage.removeItem(AuthService.AccessTokenKey);
     this.router.navigate(["/"]);
   }
+
   getToken(): AccessTokenResponse | null {
-    var localToken = localStorage.getItem(AuthService.AccessTokenKey);
+    const localToken = localStorage.getItem(AuthService.AccessTokenKey);
     return localToken ? JSON.parse(localToken) : null;
   }
 
-  refreshTokenIfNeeded(): Observable<AccessTokenResponse> {
-
+  async refreshTokenIfNeeded(): Promise<AccessTokenResponse> {
+    if (this.isAuthenticated && !this.isTokenFresh) {
+      return await this.refreshToken();
+    }
+    return this.getToken();
   }
 
   public async refreshToken(): Promise<AccessTokenResponse> {
     if (this.isAuthenticated) {
       let token = this.getToken();
       try {
-        token = await this.http.post<AccessTokenResponse>(Config.backendUrl + 'api/account/refresh-token', { refreshToken: token.refreshToken, userId: token.userId }).toPromise();
+        token = await this.http
+          .post<AccessTokenResponse>(Config.backendUrl + "api/account/refresh-token", {
+            refreshToken: token.refreshToken,
+            userId: token.userId
+          })
+          .toPromise();
         return token;
-      }
-      catch (err) {
+      } catch (err) {
         if (err instanceof HttpErrorResponse && err.status === 422) {
           // wrong combination of userId and refreshToken
         }
@@ -77,9 +87,8 @@ export class AuthService {
     }
   }
 
-
   private authenticate(accessTokenResponse: AccessTokenResponse): void {
-    localStorage.setItem("accessTokenResponse", JSON.stringify(accessTokenResponse));
+    localStorage.setItem(AuthService.AccessTokenKey, JSON.stringify(accessTokenResponse));
     this.router.navigate(["/"]);
   }
 }
