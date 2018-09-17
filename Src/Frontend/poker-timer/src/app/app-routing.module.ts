@@ -2,8 +2,8 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Routes, RouterModule } from "@angular/router";
 
-import { LoginComponent } from "./login/login.component";
-import { RegisterComponent } from "./register/register.component";
+import { LoginComponent } from "@app/login/login.component";
+import { RegisterComponent } from "@app/register/register.component";
 import { TournamentsComponent } from "@app/tournament/tournaments.component";
 import { TournamentComponent } from "@app/tournament/tournament.component";
 import { TournamentEditComponent } from "@app/tournament/tournament-edit.component";

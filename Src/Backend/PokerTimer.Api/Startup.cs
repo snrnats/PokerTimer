@@ -1,15 +1,16 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using PokerTimer.Api.Models.Tournament;
+using PokerTimer.Api.Auth;
+using PokerTimer.Api.Filters;
+using PokerTimer.Api.Middlewares;
 
 namespace PokerTimer.Api
 {
@@ -28,7 +29,7 @@ namespace PokerTimer.Api
             services.AddDbContext<TournomentContext>(builder => builder.UseInMemoryDatabase("tournoments"));
             services.AddDbContext<AccountContext>(builder => builder.UseInMemoryDatabase("accounts"));
 
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AccountContext>();
+            services.AddIdentity<PokerUser, IdentityRole>().AddEntityFrameworkStores<AccountContext>();
 
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is the secret phrase"));
 
@@ -38,32 +39,35 @@ namespace PokerTimer.Api
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(cfg =>
             {
-                cfg.RequireHttpsMetadata = false;
+                cfg.RequireHttpsMetadata = true;
                 cfg.SaveToken = true;
-                cfg.TokenValidationParameters = new TokenValidationParameters()
+                cfg.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ClockSkew = TimeSpan.Zero,
                     IssuerSigningKey = signingKey,
-                    ValidateAudience =  false,
+                    ValidateAudience = false,
                     ValidateIssuer = false,
-                    ValidateLifetime = false,
+                    ValidateLifetime = true,
                     ValidateIssuerSigningKey = true
                 };
             });
 
             services.AddCors(options => options.AddPolicy("cors", builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
-            services.AddMvc();
+            services.AddMvc(options => options.Filters.Add<ModelStateValidationFilter>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseAuthentication();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+            
+            app.UseAuthentication();
 
             app.UseCors("cors");
 

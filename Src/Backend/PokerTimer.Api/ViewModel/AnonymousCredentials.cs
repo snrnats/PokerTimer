@@ -1,4 +1,4 @@
-﻿namespace PokerTimer.Api.Models
+﻿namespace PokerTimer.Api.ViewModel
 {
     public class AnonymousCredentials
     {
