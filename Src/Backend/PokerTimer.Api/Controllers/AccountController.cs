@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using PokerTimer.Api.Auth;
 using PokerTimer.Api.Exceptions;
 using PokerTimer.Api.ViewModel;
@@ -40,35 +39,12 @@ namespace PokerTimer.Api.Controllers
 
             if (!result.Succeeded)
             {
-                throw new UnprocessableEntryException(ErrorCode.CantSignUp, JsonConvert.SerializeObject(GetErrorResponse(result)));
+                ThrowException(result);
             }
 
             await _signInManager.SignInAsync(user, false);
 
             return CreateToken(user);
-        }
-
-        private static ErrorResponse GetErrorResponse(IdentityResult identityResult)
-        {
-            if (!identityResult.Succeeded)
-            {
-                var items = new List<ValidationErrorItem>();
-                foreach (var error in identityResult.Errors)
-                {
-                    if (error.Code == nameof(IdentityErrorDescriber.DuplicateUserName))
-                    {
-                        var item = new ValidationErrorItem(nameof(Credentials.Username), error.Description);
-                        items.Add(item);
-                    }
-                }
-
-                if (items.Any())
-                {
-                    return new ValidationErrorResponse(ErrorCode.ValidationError, "Failed to register", items);
-                }
-            }
-
-            return new ErrorResponse(ErrorCode.CantSignUp, "Failed to register");
         }
 
         [HttpPost("token")]
@@ -77,7 +53,7 @@ namespace PokerTimer.Api.Controllers
             var result = await _signInManager.PasswordSignInAsync(credentials.Username, credentials.Password, false, false);
             if (!result.Succeeded)
             {
-                throw new UnprocessableEntryException(ErrorCode.CantSignIn, result.ToString());
+                throw new ValidationException("Invalid Username or Password", new ValidationErrorItem[] { });
             }
 
             var user = await _userManager.FindByNameAsync(credentials.Username);
@@ -91,12 +67,32 @@ namespace PokerTimer.Api.Controllers
             var currentUser = await _userManager.FindByIdAsync(credentials.UserId);
             if (currentUser.RefreshToken != credentials.RefreshToken)
             {
-                throw new UnprocessableEntryException(ErrorCode.InvalidRefreshToken, "Invalid refresh token");
+                throw new DomainException(ErrorCode.InvalidRefreshToken, "Invalid refresh token");
             }
 
             return CreateToken(currentUser);
         }
 
+        [HttpPost("loginAnonymous")]
+        public async Task<IActionResult> LoginAnonymous([FromBody] AnonymousCredentials credentials)
+        {
+            var existingUser = await _userManager.FindByIdAsync(credentials.DeviceId);
+
+            if (existingUser == null)
+            {
+                var user = new PokerUser {UserName = credentials.DeviceId};
+                var result = await _userManager.CreateAsync(user);
+
+                if (!result.Succeeded)
+                {
+                    ThrowException(result);
+                }
+
+                existingUser = user;
+            }
+
+            return Ok(CreateToken(existingUser));
+        }
 
         private AccessTokenResponse CreateToken(PokerUser user)
         {
@@ -113,25 +109,27 @@ namespace PokerTimer.Api.Controllers
             return new AccessTokenResponse(token, expireDate.ToUnixTimeSeconds(), user.RefreshToken, user.Id);
         }
 
-        [HttpPost("loginAnonymous")]
-        public async Task<IActionResult> LoginAnonymous([FromBody] AnonymousCredentials credentials)
+        private static void ThrowException(IdentityResult identityResult)
         {
-            var existingUser = await _userManager.FindByIdAsync(credentials.DeviceId);
-
-            if (existingUser == null)
+            if (!identityResult.Succeeded)
             {
-                var user = new PokerUser {UserName = credentials.DeviceId};
-                var result = await _userManager.CreateAsync(user);
-
-                if (!result.Succeeded)
+                var items = new List<ValidationErrorItem>();
+                foreach (var error in identityResult.Errors)
                 {
-                    return BadRequest();
+                    if (error.Code == nameof(IdentityErrorDescriber.DuplicateUserName))
+                    {
+                        var item = new ValidationErrorItem(nameof(Credentials.Username), error.Description);
+                        items.Add(item);
+                    }
                 }
 
-                existingUser = user;
+                if (items.Any())
+                {
+                    throw new ValidationException("Can't register an account", items);
+                }
             }
 
-            return Ok(CreateToken(existingUser));
+            throw new DomainException(ErrorCode.IdentityError, string.Join(", ", identityResult.Errors));
         }
     }
 }

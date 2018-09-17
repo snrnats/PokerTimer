@@ -6,8 +6,8 @@
     </a>
 
     <div class="nav-menu">
-      <button mat-button routerLink="/tournaments">Tournament</button>
-      <button mat-button routerLink="/setups">Presets</button>
+      <button *ngIf="auth.isAuthenticated" mat-button routerLink="/tournaments">Tournament</button>
+      <button *ngIf="auth.isAuthenticated" mat-button routerLink="/setups">Presets</button>
     </div>
     <span style="flex: 1 1 auto"></span>
     <button *ngIf="!auth.isAuthenticated" mat-button routerLink="/register">Register</button>

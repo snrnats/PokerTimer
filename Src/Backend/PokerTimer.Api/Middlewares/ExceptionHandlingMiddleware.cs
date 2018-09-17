@@ -26,16 +26,23 @@ namespace PokerTimer.Api.Middlewares
             {
                 await _next(context);
             }
-            catch (DomainApiException e)
+            catch (NotFoundException e)
             {
-                if (!await TryWriteError(context, e.Status, new ErrorResponse(e.Code, e.Message)))
+                if (!await TryWriteError(context, HttpStatusCode.NotFound, new ErrorResponse(e.Code, e.Message)))
+                {
+                    throw;
+                }
+            }
+            catch (NoPermissionsException e)
+            {
+                if (!await TryWriteError(context, HttpStatusCode.Forbidden, new ErrorResponse(e.Code, e.Message)))
                 {
                     throw;
                 }
             }
             catch (DomainException e)
             {
-                if (!await TryWriteError(context, HttpStatusCode.UnprocessableEntity, new ErrorResponse(ErrorCode.Unknown, e.Message)))
+                if (!await TryWriteError(context, HttpStatusCode.UnprocessableEntity, new ErrorResponse(e.Code, e.Message)))
                 {
                     throw;
                 }
@@ -43,6 +50,8 @@ namespace PokerTimer.Api.Middlewares
             catch (Exception e)
             {
                 _logger.LogError(e, "An unhandled exception has occurred");
+                context.Response.Clear();
+                context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
             }
         }
 

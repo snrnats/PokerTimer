@@ -5,7 +5,10 @@
         CantSignUp,
         CantSignIn,
         Unknown,
+        IdentityError,
         InvalidRefreshToken,
-        ValidationError
+        ValidationError,
+        NoPermissions,
+        NotFound
     }
 }

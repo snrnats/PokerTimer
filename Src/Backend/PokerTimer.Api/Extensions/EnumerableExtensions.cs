@@ -8,6 +8,10 @@ namespace PokerTimer.Api.Extensions
     {
         public static ReadOnlyCollection<T> ToReadOnly<T>(this IEnumerable<T> source)
         {
+            if (source is ReadOnlyCollection<T> collection)
+            {
+                return collection;
+            }
             if (source is IList<T> list)
             {
                 return new ReadOnlyCollection<T>(list);

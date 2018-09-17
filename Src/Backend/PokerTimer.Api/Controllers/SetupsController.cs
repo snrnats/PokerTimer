@@ -31,10 +31,12 @@ namespace PokerTimer.Api.Controllers
             {
                 setups = setups.Where(setup => setup.OwnerId == userId);
             }
-            foreach(var setup in setups)
+
+            foreach (var setup in setups)
             {
                 setup.Levels.Sort((x, y) => x.Index.CompareTo(y.Index));
             }
+
             return setups;
         }
 
@@ -42,18 +44,13 @@ namespace PokerTimer.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSetup([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var setup = await _context.Setups.Include(s => s.Levels).SingleOrDefaultAsync(m => m.Id == id);
-            setup.Levels.Sort((x, y) => x.Index.CompareTo(y.Index));
-
             if (setup == null)
             {
-                return NotFound();
+                return NotFound("No setups were found with the specified id");
             }
+
+            setup.Levels.Sort((x, y) => x.Index.CompareTo(y.Index));
 
             return Ok(setup);
         }
@@ -63,22 +60,19 @@ namespace PokerTimer.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSetup([FromRoute] int id, [FromBody] Setup setup)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             if (id != setup.Id)
             {
-                return BadRequest();
+                return UnprocessableEntity("Id in the requested url doesn't match id in body");
             }
 
-            var storedSetup = await _context.Setups.AsNoTracking().Include(s => s.Levels).FirstOrDefaultAsync(s => s.Id==id);//.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
+            var storedSetup = await _context.Setups.AsNoTracking().Include(s => s.Levels)
+                .FirstOrDefaultAsync(s => s.Id == id);
             var userId = User.GetUserId();
             if (storedSetup.OwnerId != userId)
             {
-                return BadRequest();
+                return Forbid("Can't edit a setup you don't own");
             }
+
             _context.Set<Level>().RemoveRange(storedSetup.Levels);
 
             setup.OwnerId = userId;
@@ -95,10 +89,8 @@ namespace PokerTimer.Api.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
 
             return NoContent();
@@ -109,18 +101,13 @@ namespace PokerTimer.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> PostSetup([FromBody] Setup setup)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var userId = User.GetUserId();
             setup.OwnerId = userId;
             SetLevelIndexes(setup);
             _context.Setups.Add(setup);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetSetup", new { id = setup.Id }, setup);
+            return CreatedAtAction("GetSetup", new {id = setup.Id}, setup);
         }
 
         // DELETE: api/Setups/5
@@ -128,11 +115,6 @@ namespace PokerTimer.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSetup([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var setup = await _context.Setups.SingleOrDefaultAsync(m => m.Id == id);
             if (setup == null)
             {
@@ -142,7 +124,7 @@ namespace PokerTimer.Api.Controllers
             var userId = User.GetUserId();
             if (setup.OwnerId != userId)
             {
-                return BadRequest();
+                return Forbid();
             }
 
             _context.Setups.Remove(setup);
@@ -158,7 +140,7 @@ namespace PokerTimer.Api.Controllers
 
         private void SetLevelIndexes(Setup setup)
         {
-            for (int i = 0; i < setup.Levels.Count; i++)
+            for (var i = 0; i < setup.Levels.Count; i++)
             {
                 setup.Levels[i].Index = i;
             }

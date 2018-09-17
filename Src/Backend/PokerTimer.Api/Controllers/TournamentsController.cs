@@ -40,11 +40,6 @@ namespace PokerTimer.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTournament([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var tournament = await _context.Tournaments.Include(t => t.Setup).ThenInclude(s => s.Levels).SingleOrDefaultAsync(m => m.Id == id);
 
             if (tournament == null)
@@ -62,14 +57,9 @@ namespace PokerTimer.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTournament([FromRoute] int id, [FromBody] Tournament tournament)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             if (id != tournament.Id)
             {
-                return BadRequest();
+                return UnprocessableEntity();
             }
 
             var storedTournament = await _context.Tournaments.FindAsync(id);
@@ -77,7 +67,7 @@ namespace PokerTimer.Api.Controllers
 
             if (storedTournament.OwnerId != userId)
             {
-                return BadRequest();
+                return Forbid();
             }
 
             _context.Entry(storedTournament).State = EntityState.Detached;
@@ -106,11 +96,6 @@ namespace PokerTimer.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> PostTournament([FromBody] Tournament tournament)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var userId = User.GetUserId();
             tournament.OwnerId = userId;
             _context.Tournaments.Add(tournament);
@@ -124,11 +109,6 @@ namespace PokerTimer.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTournament([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var tournament = await _context.Tournaments.SingleOrDefaultAsync(m => m.Id == id);
 
             if (tournament == null)
@@ -139,7 +119,7 @@ namespace PokerTimer.Api.Controllers
             var userId = User.GetUserId();
             if (tournament.OwnerId != userId)
             {
-                return BadRequest();
+                return Forbid();
             }
 
             _context.Tournaments.Remove(tournament);
@@ -152,11 +132,6 @@ namespace PokerTimer.Api.Controllers
         [HttpPut("pause/{id}")]
         public async Task<IActionResult> PauseTournament([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var tournament = await _context.Tournaments.SingleOrDefaultAsync(t => t.Id == id);
 
             if (tournament == null)
@@ -167,7 +142,7 @@ namespace PokerTimer.Api.Controllers
             var userId = User.GetUserId();
             if (tournament.OwnerId != userId)
             {
-                return BadRequest();
+                return Forbid();
             }
 
             tournament.IsPaused = true;

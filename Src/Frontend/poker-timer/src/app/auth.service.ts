@@ -53,7 +53,7 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(AuthService.AccessTokenKey);
-    this.router.navigate(["/"]);
+    this.router.navigate(["/login"]);
   }
 
   getToken(): AccessTokenResponse | null {

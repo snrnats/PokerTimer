@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Net;
 
 namespace PokerTimer.Api.Exceptions
 {
-    public class NotFoundException : DomainApiException
+    public class NotFoundException : DomainException
     {
-        public NotFoundException(ErrorCode code, string message) : base(HttpStatusCode.NotFound, code, message)
+        public NotFoundException(string message) : base(ErrorCode.NotFound, message)
         {
         }
 
-        public NotFoundException(ErrorCode code, string message, Exception innerException) : base(HttpStatusCode.NotFound, code, message, innerException)
+        public NotFoundException(string message, Exception innerException) : base(ErrorCode.NotFound, message, innerException)
         {
         }
     }
