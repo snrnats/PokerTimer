@@ -14,13 +14,11 @@ export class TournamentsComponent implements OnInit {
   TournamentProgress = TournamentProgress;
   statuses: TournamentStatus[];
 
-  constructor(private api: ApiService) {
-  }
+  constructor(private api: ApiService) {}
 
   ngOnInit() {
     this.api.getTournaments().subscribe(res => {
       this.statuses = res.map(TournamentManager.getStatus);
     });
   }
-
 }

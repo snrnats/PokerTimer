@@ -11,28 +11,27 @@ import { SetupEditComponent } from "@app/setup/setup-edit.component";
 import { SetupsComponent } from "@app/setup/setups.component";
 import { SetupComponent } from "@app/setup/setup.component";
 import { PageNotFoundComponent } from "@app/page-not-found/page-not-found.component";
+import { AuthGuard } from "@app/shared/auth-guard.service";
 
 const routes: Routes = [
   { path: "login", component: LoginComponent },
   { path: "register", component: RegisterComponent },
-  { path: "tournaments", component: TournamentsComponent },
-  { path: "tournaments/create", component: TournamentEditComponent },
-  { path: "tournaments/:id", component: TournamentComponent },
-  { path: "tournaments/edit/:id", component: TournamentEditComponent },
-  { path: "setups", component: SetupsComponent,  },
-  { path: "setups/create", component: SetupEditComponent },
-  { path: "setups/:id", component: SetupComponent },
-  { path: "setups/edit/:id", component: SetupEditComponent },
-  { path: "",   redirectTo: "/tournaments", pathMatch: "full" },
+  { path: "tournaments", component: TournamentsComponent, canActivate: [AuthGuard] },
+
+  { path: "tournaments/create", component: TournamentEditComponent, canActivate: [AuthGuard] },
+  { path: "tournaments/:id", component: TournamentComponent, canActivate: [AuthGuard] },
+  { path: "tournaments/edit/:id", component: TournamentEditComponent, canActivate: [AuthGuard] },
+  { path: "setups", component: SetupsComponent, canActivate: [AuthGuard] },
+  { path: "setups/create", component: SetupEditComponent, canActivate: [AuthGuard] },
+  { path: "setups/:id", component: SetupComponent, canActivate: [AuthGuard] },
+  { path: "setups/edit/:id", component: SetupEditComponent, canActivate: [AuthGuard] },
+  { path: "", redirectTo: "/tournaments", pathMatch: "full" },
   { path: "**", component: PageNotFoundComponent }
 ];
 
 @NgModule({
-  exports: [
-    RouterModule
-  ],
-  imports: [
-    RouterModule.forRoot(routes)
-  ],
+  exports: [RouterModule],
+  imports: [RouterModule.forRoot(routes)],
+  providers: [AuthGuard]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

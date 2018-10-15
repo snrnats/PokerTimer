@@ -1,3 +1,3 @@
-export class UnauthorizedError extends Error {
-    
-}
+import { AppError } from "@app/api/errors/app-error";
+
+export class UnauthorizedError extends AppError {}

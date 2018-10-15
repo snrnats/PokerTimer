@@ -1,5 +1,5 @@
 import { BrowserModule } from "@angular/platform-browser";
-import { NgModule } from "@angular/core";
+import { NgModule, ErrorHandler } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
@@ -18,7 +18,9 @@ import {
   MatListModule,
   MatRippleModule,
   MatTabsModule,
-  MatButtonToggleModule
+  MatButtonToggleModule,
+  MatSnackBar,
+  MatSnackBarModule
 } from "@angular/material";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatInputModule } from "@angular/material/input";
@@ -44,6 +46,8 @@ import { SetupsComponent } from "@app/setup/setups.component";
 import { SetupComponent } from "@app/setup/setup.component";
 import { PageNotFoundComponent } from "@app/page-not-found/page-not-found.component";
 import { ConfirmDialogComponent } from "@app/shared/confirm-dialog/confirm-dialog.component";
+import { GlobalErrorHandler } from "@app/shared/global-error-handler";
+import { ToastService } from "@app/shared/toast.service";
 /*
 Add visibility to setups and tournaments: only me (private), not listed (by id), public
 Handle server and network errors
@@ -87,17 +91,22 @@ Handle server and network errors
     MatDialogModule,
     MatTabsModule,
     MatButtonToggleModule,
-    MatListModule
+    MatListModule,
+    MatSnackBarModule
   ],
-  providers: [AuthService, ApiService, DatePipe,
+  providers: [
+    AuthService,
+    ApiService,
+    DatePipe,
+    ToastService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }],
-  entryComponents: [
-    ConfirmDialogComponent
+    },
+    { provide: ErrorHandler, useClass: GlobalErrorHandler }
   ],
+  entryComponents: [ConfirmDialogComponent],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

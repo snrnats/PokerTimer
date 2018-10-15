@@ -24,8 +24,7 @@ export class AuthService {
   getUserId(): string {
     const t = this.getToken();
     if (t !== null) {
-      const data = jwt_decode(t);
-      console.log(data);
+      const data = jwt_decode(t.accessToken);
       if (data.hasOwnProperty("sub")) {
         return data["sub"];
       }
@@ -34,15 +33,9 @@ export class AuthService {
   }
 
   async register(credentials: Credentials): Promise<AccessTokenResponse | IErrorResponse> {
-    try {
-      const accessToken = await this.http.post<AccessTokenResponse>(Config.backendUrl + `api/account/register`, credentials).toPromise();
-      this.authenticate(accessToken);
-      return accessToken;
-    } catch (e) {
-      if (e instanceof HttpErrorResponse && e.status === 422) {
-        return <IErrorResponse>JSON.parse(e.message);
-      }
-    }
+    const accessToken = await this.http.post<AccessTokenResponse>(Config.backendUrl + `api/account/register`, credentials).toPromise();
+    this.authenticate(accessToken);
+    return accessToken;
   }
 
   login(credentials: Credentials): void {
