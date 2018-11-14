@@ -7,7 +7,8 @@
         </ng-container>
         <ng-container *ngSwitchCase="TournamentProgress.OnGoing">
             <div style="position: relative;">
-                <mat-progress-spinner diameter="400" style="margin: 0px auto; width: 300px;height: 300px;" mode="determinate" [value]="status.levelProgress">
+                <mat-progress-spinner diameter="400" style="margin: 0px auto; width: 300px;height: 300px;" mode="determinate"
+                    [value]="status.levelProgress">
                 </mat-progress-spinner>
                 <div class="center-transform mat-display-3 primary-color">
                     {{status.levelTimeLeft|timeSpan}}
@@ -44,8 +45,8 @@
                 <mat-list-item class="active-level"> Salt </mat-list-item>
                 <mat-list-item> Paprika </mat-list-item>
             </mat-list>-->
-            <button *ngIf="!isPaused" mat-button color="primary" (click)="onPaused()">PAUSE</button>
-            <button *ngIf="isPaused" mat-button color="primary" (click)="onResumed()">RESUME</button>
+            <button *ngIf="!tournament.isPaused" mat-button color="primary" (click)="onPaused()">PAUSE</button>
+            <button *ngIf="tournament.isPaused" mat-button color="primary" (click)="onResumed()">RESUME</button>
             <button mat-button color="primary" routerLink="/setups/{{tournament.setup.id}}">SETUP DETAILS</button>
         </ng-container>
     </ng-container>

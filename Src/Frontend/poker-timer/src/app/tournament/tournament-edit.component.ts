@@ -14,36 +14,41 @@ import { SetupOwnerFilter } from "@app/api/setup-owner-filter";
   styleUrls: ["./tournament-edit.component.css"]
 })
 export class TournamentEditComponent implements OnInit {
-
   private id: number;
   form: FormGroup;
   setups: TournamentSetup[];
-  constructor(private fb: FormBuilder, private api: ApiService, private route: ActivatedRoute, private router: Router) {
-  }
+  constructor(private fb: FormBuilder, private api: ApiService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit() {
-    this.route.paramMap.pipe(switchMap((params: ParamMap) => {
-      if (params.has("id")) {
-        const tournamentId = Number(params.get("id"));
-        return this.api.getTournament(tournamentId);
-      }
-      return new Observable<Tournament>(sub => sub.next({
-        id: null,
-        title: null,
-        setup: null,
-        startDate: new Date(),
-        pauseDuration: null,
-        isPaused: false
-      }));
-    })).subscribe((res: Tournament) => {
-      this.id = res.id;
-      this.form = this.fb.group({
-        title: [res.title, [Validators.required]],
-        startDate: [res.startDate, [Validators.required, Validators.minLength(6)]],
-        setupId: [res.setup !== null ? res.setup.id : null, [Validators.required]]
+    this.route.paramMap
+      .pipe(
+        switchMap((params: ParamMap) => {
+          if (params.has("id")) {
+            const tournamentId = Number(params.get("id"));
+            return this.api.getTournament(tournamentId);
+          }
+          return new Observable<Tournament>(sub =>
+            sub.next({
+              id: null,
+              title: null,
+              setup: null,
+              startDate: new Date(),
+              pauseDuration: null,
+              isPaused: false,
+              pauseStart: undefined
+            })
+          );
+        })
+      )
+      .subscribe((res: Tournament) => {
+        this.id = res.id;
+        this.form = this.fb.group({
+          title: [res.title, [Validators.required]],
+          startDate: [res.startDate, [Validators.required, Validators.minLength(6)]],
+          setupId: [res.setup !== null ? res.setup.id : null, [Validators.required]]
+        });
       });
-    });
-    this.api.getSetups(SetupOwnerFilter.Me).subscribe(res => this.setups = res);
+    this.api.getSetups(SetupOwnerFilter.Me).subscribe(res => (this.setups = res));
   }
 
   submit(): void {

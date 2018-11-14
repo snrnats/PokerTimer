@@ -65,7 +65,7 @@ namespace PokerTimer.Api.Controllers
         public async Task<AccessTokenResponse> RefreshToken([FromBody] RefreshAccessTokenRequest credentials)
         {
             var currentUser = await _userManager.FindByIdAsync(credentials.UserId);
-            if (currentUser.RefreshToken != credentials.RefreshToken)
+            if (currentUser?.RefreshToken != credentials.RefreshToken)
             {
                 throw new DomainException(ErrorCode.InvalidRefreshToken, "Invalid refresh token");
             }

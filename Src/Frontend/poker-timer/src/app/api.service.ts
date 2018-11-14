@@ -95,11 +95,11 @@ export class ApiService {
     );
   }
 
-  pauseTournament(id: number): Observable<Object> {
-    return this.http.put(tournamentsEndpoint + `${id}`, "");
+  pauseTournament(id: number): Observable<Tournament> {
+    return this.http.put<Tournament>(tournamentsEndpoint + `${id}/pause`, "");
   }
 
-  resumeTournament(id: number): Observable<Object> {
-    return this.http.put(tournamentsEndpoint + `${id}`, "");
+  resumeTournament(id: number): Observable<Tournament> {
+    return this.http.put<Tournament>(tournamentsEndpoint + `${id}/resume`, "");
   }
 }

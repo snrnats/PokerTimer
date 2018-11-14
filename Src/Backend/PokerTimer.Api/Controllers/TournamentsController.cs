@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using PokerTimer.Api.Extensions;
 using PokerTimer.Api.Models.Tournament;
+using PokerTimer.Api.Services;
 
 namespace PokerTimer.Api.Controllers
 {
@@ -15,10 +17,12 @@ namespace PokerTimer.Api.Controllers
     public class TournamentsController : Controller
     {
         private readonly TournomentContext _context;
+        private readonly TournamentService _tournamentService;
 
-        public TournamentsController(TournomentContext context)
+        public TournamentsController(TournomentContext context, TournamentService tournamentService)
         {
             _context = context;
+            _tournamentService = tournamentService;
         }
 
         // GET: api/Tournaments
@@ -26,30 +30,14 @@ namespace PokerTimer.Api.Controllers
         [HttpGet]
         public async Task<IEnumerable<Tournament>> GetTournaments()
         {
-            var userId = User.GetUserId();
-            var tournaments = await _context.Tournaments.Where(tournament => tournament.OwnerId == userId).Include(t => t.Setup).ThenInclude(s => s.Levels).ToListAsync();
-            foreach (var tournament in tournaments)
-            {
-                tournament.Setup.Levels.Sort((x, y) => x.Index.CompareTo(y.Index));
-            }
-
-            return tournaments;
+            return await _tournamentService.GetTournaments(User.GetUserId());
         }
 
         // GET: api/Tournaments/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetTournament([FromRoute] int id)
+        public async Task<Tournament> GetTournament([FromRoute] int id)
         {
-            var tournament = await _context.Tournaments.Include(t => t.Setup).ThenInclude(s => s.Levels).SingleOrDefaultAsync(m => m.Id == id);
-
-            if (tournament == null)
-            {
-                return NotFound();
-            }
-
-            tournament.Setup.Levels.Sort((x, y) => x.Index.CompareTo(y.Index));
-
-            return Ok(tournament);
+            return await _tournamentService.GetTournament(id);
         }
 
         // PUT: api/Tournaments/5
@@ -62,31 +50,7 @@ namespace PokerTimer.Api.Controllers
                 return UnprocessableEntity();
             }
 
-            var storedTournament = await _context.Tournaments.FindAsync(id);
-            var userId = User.GetUserId();
-
-            if (storedTournament.OwnerId != userId)
-            {
-                return Forbid();
-            }
-
-            _context.Entry(storedTournament).State = EntityState.Detached;
-            tournament.OwnerId = userId;
-            _context.Entry(tournament).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TournamentExists(id))
-                {
-                    return NotFound();
-                }
-
-                throw;
-            }
+            await _tournamentService.UpdateTournament(tournament, User.GetUserId());
 
             return NoContent();
         }
@@ -129,8 +93,36 @@ namespace PokerTimer.Api.Controllers
         }
 
         [Authorize]
-        [HttpPut("pause/{id}")]
+        [HttpPut("{id}/pause")]
         public async Task<IActionResult> PauseTournament([FromRoute] int id)
+        {
+            var tournament = await _context.Tournaments.Include(t => t.Setup).ThenInclude(s => s.Levels).SingleOrDefaultAsync(t => t.Id == id);
+
+            if (tournament == null)
+            {
+                return NotFound();
+            }
+
+            var userId = User.GetUserId();
+            if (tournament.OwnerId != userId)
+            {
+                return Forbid();
+            }
+
+            if (tournament.PauseStart != null)
+            {
+                tournament.PauseDuration += DateTimeOffset.UtcNow - tournament.PauseStart.Value;
+            }
+            tournament.PauseStart = DateTimeOffset.UtcNow;
+            _context.Entry(tournament).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(tournament);
+        }
+
+        [Authorize]
+        [HttpPut("{id}/resume")]
+        public async Task<IActionResult> ResumeTournament([FromRoute] int id)
         {
             var tournament = await _context.Tournaments.SingleOrDefaultAsync(t => t.Id == id);
 
@@ -145,16 +137,15 @@ namespace PokerTimer.Api.Controllers
                 return Forbid();
             }
 
-            tournament.IsPaused = true;
-            _context.Entry(tournament).Property(nameof(Tournament.IsPaused)).IsModified = true;
-            await _context.SaveChangesAsync();
+            if (tournament.PauseStart != null)
+            {
+                tournament.PauseDuration += DateTimeOffset.UtcNow - tournament.PauseStart.Value;
+                tournament.PauseStart = null;
+                _context.Entry(tournament).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
 
             return Ok(tournament);
-        }
-
-        private bool TournamentExists(int id)
-        {
-            return _context.Tournaments.Any(e => e.Id == id);
         }
     }
 }

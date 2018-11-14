@@ -13,55 +13,65 @@ import { TournamentProgress } from "@app/models/tournament-progress.enum";
 @Component({
   selector: "app-tournament",
   templateUrl: "./tournament.component.html",
-  styleUrls: ["./tournament.component.css"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ["./tournament.component.css"]
 })
 export class TournamentComponent implements OnInit, OnDestroy {
   TournamentProgress = TournamentProgress;
   tournament: Tournament;
   status: TournamentStatus;
-  isPaused = false;
   intervalHandle: any;
 
-  constructor(private route: ActivatedRoute, private api: ApiService, private cdr: ChangeDetectorRef) {
-  }
+  constructor(private route: ActivatedRoute, private api: ApiService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.route.paramMap.pipe(switchMap((params: ParamMap) => {
-      const tournamentId = Number(params.get("id"));
-      return this.api.getTournament(tournamentId);
-    })).subscribe(res => {
-      console.log(res);
-      this.tournament = res;
-      this.beginTournamentTracking();
-    });
+    this.route.paramMap
+      .pipe(
+        switchMap((params: ParamMap) => {
+          const tournamentId = Number(params.get("id"));
+          return this.api.getTournament(tournamentId);
+        })
+      )
+      .subscribe(res => {
+        this.tournament = res;
+        if (!res.isPaused) {
+          this.beginTournamentTracking();
+        } else {
+          this.updateTournamentStatus();
+        }
+      });
   }
 
   ngOnDestroy(): void {
+    this.endTournamentTracking();
+  }
+
+  endTournamentTracking(): void {
     clearInterval(this.intervalHandle);
   }
 
   beginTournamentTracking(): void {
-    this.updateTournamentStatusPeriodically();
-  }
-
-  updateTournamentStatus(): void {
-    this.status = TournamentManager.getStatus(this.tournament);
-    this.cdr.detectChanges();
-  }
-
-  updateTournamentStatusPeriodically(): void {
+    console.log("begin update");
     this.updateTournamentStatus();
-
+    console.log("begin update 2");
     this.intervalHandle = setInterval(() => this.updateTournamentStatus(), 1000);
   }
 
-  onPaused(): void {
-
+  updateTournamentStatus(): void {
+    console.log("update");
+    this.status = TournamentManager.getStatus(this.tournament);
+    console.log("update 2");
+    this.cdr.detectChanges();
+    console.log("update 3");
   }
 
-  onResumed(): void {
+  async onPaused(): Promise<void> {
+    this.tournament = await this.api.pauseTournament(this.tournament.id).toPromise();
+    this.endTournamentTracking();
+  }
 
+  async onResumed(): Promise<void> {
+    this.tournament = await this.api.resumeTournament(this.tournament.id).toPromise();
+    this.beginTournamentTracking();
   }
 
   update(): void {

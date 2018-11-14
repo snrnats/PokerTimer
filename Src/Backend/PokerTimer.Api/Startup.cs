@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using PokerTimer.Api.Auth;
 using PokerTimer.Api.Filters;
 using PokerTimer.Api.Middlewares;
+using PokerTimer.Api.Services;
 
 namespace PokerTimer.Api
 {
@@ -55,6 +56,8 @@ namespace PokerTimer.Api
             services.AddCors(options => options.AddPolicy("cors", builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
             services.AddMvc(options => options.Filters.Add<ModelStateValidationFilter>());
+
+            services.AddScoped<TournamentService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
