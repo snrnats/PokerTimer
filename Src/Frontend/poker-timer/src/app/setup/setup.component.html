@@ -1,55 +1,54 @@
-<div *ngIf="setup; else loading">
-    <div class="row">
-        <span class="mat-headline">{{setup.title}}</span>
+<div *ngIf="setup; else: loading">
+  <div class="row">
+    <span class="mat-headline">{{ setup.title }}</span>
+  </div>
+  <div>
+    <p class="mat-body-2">Number of players: {{ setup.numberOfPlayers }}</p>
+    <p class="mat-body-2">Is infinite: {{ setup.isInfinite }}</p>
+    <p *ngIf="setup.isInfinite" class="mat-body-2">Blind multiplier: {{ setup.infiniteMultiplier }}</p>
+  </div>
+
+  <table *ngIf="setup.levels.length > 0" mat-table class="mat-elevation-z8" [dataSource]="setup.levels">
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef>Index</th>
+      <td mat-cell *matCellDef="let element; let m = index">{{ m + 1 }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="smallBlind">
+      <th mat-header-cell *matHeaderCellDef>Small blind</th>
+      <td mat-cell *matCellDef="let element">{{ element.smallBlind }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="bigBlind">
+      <th mat-header-cell *matHeaderCellDef>Big blind</th>
+      <td mat-cell *matCellDef="let element">{{ element.bigBlind }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="ante">
+      <th mat-header-cell *matHeaderCellDef>Ante</th>
+      <td mat-cell *matCellDef="let element">{{ element.ante }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="duration">
+      <th mat-header-cell *matHeaderCellDef>Duration</th>
+      <td mat-cell *matCellDef="let element">{{ element.duration }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <!-- <button *ngIf="canEdit" mat-raised-button color="primary" type="button" routerLink="/setups/edit/{{setup.id}}">Edit</button> -->
+  <div class="fab-button-window">
+    <div class="fab-button-vertical-item">
+      <button mat-mini-fab type="button" routerLink="/tournaments/create" [queryParams]="{ setupId: setup?.id }" route>
+        <mat-icon>add</mat-icon>
+      </button>
     </div>
-    <div>
-        <p class="mat-body-2">Number of players: {{setup.numberOfPlayers}}</p>
-        <p class="mat-body-2">Is infinite: {{setup.isInfinite}}</p>
-        <p *ngIf="setup.isInfinite" class="mat-body-2">Blind multiplier: {{setup.infiniteMultiplier}}</p>
+
+    <div class="fab-button-vertical-item">
+      <button *ngIf="canEdit" mat-fab type="button" routerLink="/setups/edit/{{setup.id}}"><mat-icon>edit</mat-icon></button>
     </div>
-
-    <table *ngIf="setup.levels.length > 0" mat-table class="mat-elevation-z8" [dataSource]="setup.levels">
-        <ng-container matColumnDef="title">
-            <th mat-header-cell *matHeaderCellDef> Index </th>
-            <td mat-cell *matCellDef="let element; let m = index"> {{m + 1}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="smallBlind">
-            <th mat-header-cell *matHeaderCellDef> Small blind </th>
-            <td mat-cell *matCellDef="let element">
-                {{element.smallBlind}}
-            </td>
-        </ng-container>
-
-        <ng-container matColumnDef="bigBlind">
-            <th mat-header-cell *matHeaderCellDef> Big blind </th>
-            <td mat-cell *matCellDef="let element">
-                {{element.bigBlind}}
-            </td>
-        </ng-container>
-
-        <ng-container matColumnDef="ante">
-            <th mat-header-cell *matHeaderCellDef> Ante </th>
-            <td mat-cell *matCellDef="let element">
-                {{element.ante}}
-            </td>
-        </ng-container>
-
-        <ng-container matColumnDef="duration">
-            <th mat-header-cell *matHeaderCellDef> Duration </th>
-            <td mat-cell *matCellDef="let element">
-                {{element.duration}}
-            </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
-    <!--<button *ngIf="canEdit" mat-raised-button color="primary" type="button" routerLink="/setups/edit/{{setup.id}}">Edit</button>-->
-    <button *ngIf="canEdit" mat-fab class="fab-button-window" type="button" routerLink="/setups/edit/{{setup.id}}">
-        <mat-icon>edit</mat-icon>
-    </button>
+  </div>
 </div>
-<ng-template #loading>
-    <mat-spinner class="center-horizontal"></mat-spinner>
-</ng-template>
+<ng-template #loading> <mat-spinner class="center-horizontal"></mat-spinner> </ng-template>

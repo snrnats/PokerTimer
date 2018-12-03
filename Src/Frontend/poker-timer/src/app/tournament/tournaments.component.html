@@ -1,17 +1,21 @@
+<!--
+  <nav mat-tab-nav-bar>
+  <a mat-tab-link [queryParams]="{ owner: 'me' }" routerLink="." routerLinkActive #rla="routerLinkActive" [active]="rla.isActive"> My </a>
+  <a mat-tab-link [queryParams]="{ owner: 'public' }" routerLink="." routerLinkActive #rla2="routerLinkActive" [active]="rla2.isActive">
+    Public
+  </a>
+-->
 <div *ngFor="let status of statuses">
-  <mat-card [ngClass]="{'upcoming-tournament':status.progress === TournamentProgress.NotStarted }">
+  <mat-card [ngClass]="{ 'upcoming-tournament': status.progress === TournamentProgress.NotStarted }">
     <mat-card-header>
-      <mat-card-title>{{status.tournament.title}}</mat-card-title>
-      <mat-card-subtitle>{{status.tournament.startDate|date:"medium"}}</mat-card-subtitle>
+      <mat-card-title>{{ status.tournament.title }}</mat-card-title>
+      <mat-card-subtitle>{{ status.tournament.startDate | date: "medium" }}</mat-card-subtitle>
     </mat-card-header>
-    <mat-card-content>
-    </mat-card-content>
+    <mat-card-content> </mat-card-content>
     <mat-card-actions>
       <button mat-raised-button color="primary" routerLink="/tournaments/{{status.tournament.id}}">DETAILS</button>
       <button mat-button color="primary" routerLink="/tournaments/edit/{{status.tournament.id}}">EDIT</button>
     </mat-card-actions>
   </mat-card>
 </div>
-<button mat-fab class="fab-button-window" routerLink="/tournaments/create">
-  <mat-icon>add</mat-icon>
-</button>
+<button mat-fab class="fab-button-window" routerLink="/tournaments/create"><mat-icon>add</mat-icon></button>

@@ -18,7 +18,7 @@ export class AuthService {
 
   get isTokenFresh(): boolean {
     const token = this.getToken();
-    return token && token.expires > new Date().getTime();
+    return token && token.expires > new Date().getTime() / 1000;
   }
 
   getUserId(): string {

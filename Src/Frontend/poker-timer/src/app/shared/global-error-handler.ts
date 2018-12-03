@@ -17,6 +17,5 @@ export class GlobalErrorHandler extends ErrorHandler {
       toastService.showError(error);
     }
     super.handleError(error);
-    debugger;
   }
 }

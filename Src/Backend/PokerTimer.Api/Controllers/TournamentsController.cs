@@ -96,7 +96,7 @@ namespace PokerTimer.Api.Controllers
         [HttpPut("{id}/pause")]
         public async Task<IActionResult> PauseTournament([FromRoute] int id)
         {
-            var tournament = await _context.Tournaments.Include(t => t.Setup).ThenInclude(s => s.Levels).SingleOrDefaultAsync(t => t.Id == id);
+            var tournament = await _tournamentService.GetTournament(id);
 
             if (tournament == null)
             {
@@ -124,7 +124,7 @@ namespace PokerTimer.Api.Controllers
         [HttpPut("{id}/resume")]
         public async Task<IActionResult> ResumeTournament([FromRoute] int id)
         {
-            var tournament = await _context.Tournaments.SingleOrDefaultAsync(t => t.Id == id);
+            var tournament = await _tournamentService.GetTournament(id);
 
             if (tournament == null)
             {

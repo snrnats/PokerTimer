@@ -3,8 +3,8 @@ import { ApiService } from "@app/api.service";
 import { TournamentSetup } from "@app/models/tournament-setup.model";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
-import { switchMap } from "rxjs/operators";
-import { Observable, Subscriber } from "rxjs";
+import {map, switchMap} from "rxjs/operators";
+import {from, Observable, of, Subscriber} from "rxjs";
 import { Tournament } from "@app/models/tournament.model";
 import { SetupOwnerFilter } from "@app/api/setup-owner-filter";
 
@@ -27,17 +27,22 @@ export class TournamentEditComponent implements OnInit {
             const tournamentId = Number(params.get("id"));
             return this.api.getTournament(tournamentId);
           }
-          return new Observable<Tournament>(sub =>
-            sub.next({
-              id: null,
-              title: null,
-              setup: null,
-              startDate: new Date(),
-              pauseDuration: null,
-              isPaused: false,
-              pauseStart: undefined
-            })
-          );
+          let $setup: Observable<TournamentSetup>;
+          const setupId = this.route.snapshot.queryParamMap.get("setupId");
+          if (setupId) {
+            $setup = this.api.getSetup(Number(setupId));
+          } else {
+            $setup = of<TournamentSetup>(null);
+          }
+          return $setup.pipe(map(setup => <Tournament> {
+            id: null,
+            title: null,
+            setup: setup,
+            startDate: new Date(),
+            pauseDuration: null,
+            isPaused: false,
+            pauseStart: undefined
+          }));
         })
       )
       .subscribe((res: Tournament) => {
