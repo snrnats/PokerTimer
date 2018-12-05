@@ -6,6 +6,8 @@ import { Config } from "@app/shared/config";
 import * as jwt_decode from "jwt-decode";
 import { AccessTokenResponse } from "@app/auth/model/access-token-response";
 import { IErrorResponse } from "@app/api/error-response";
+import { ServerError } from "./api/errors/server-error";
+import { ApiError } from "./api/errors/api-error";
 
 @Injectable()
 export class AuthService {
@@ -74,8 +76,9 @@ export class AuthService {
         return token;
       } catch (err) {
         if (err instanceof HttpErrorResponse && err.status === 422) {
-          // wrong combination of userId and refreshToken
+          throw new ApiError(err.status, 1, "Provided userId and refreshToken are invalid");
         }
+        throw new ServerError(err.status, "Failed to refresh token");
       }
     }
   }

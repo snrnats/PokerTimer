@@ -50,7 +50,6 @@ namespace PokerTimer.Api.Middlewares
             catch (Exception e)
             {
                 _logger.LogError(e, "An unhandled exception has occurred");
-                context.Response.Clear();
                 context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
             }
         }
@@ -62,8 +61,7 @@ namespace PokerTimer.Api.Middlewares
                 _logger.LogError("The response has already started, the http status code middleware will not be executed.");
                 return false;
             }
-
-            context.Response.Clear();
+            
             context.Response.StatusCode = (int) status;
             var response = new ErrorResponse(e.Code, e.Message);
             await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
