@@ -8,6 +8,7 @@ import { AccessTokenResponse } from "@app/auth/model/access-token-response";
 import { IErrorResponse } from "@app/api/error-response";
 import { ServerError } from "./api/errors/server-error";
 import { ApiError } from "./api/errors/api-error";
+import { convertHttpError } from "./api/errors/error-converter";
 
 @Injectable()
 export class AuthService {
@@ -66,20 +67,13 @@ export class AuthService {
   public async refreshToken(): Promise<AccessTokenResponse> {
     if (this.isAuthenticated) {
       let token = this.getToken();
-      try {
-        token = await this.http
-          .post<AccessTokenResponse>(Config.backendUrl + "api/account/refresh-token", {
-            refreshToken: token.refreshToken,
-            userId: token.userId
-          })
-          .toPromise();
-        return token;
-      } catch (err) {
-        if (err instanceof HttpErrorResponse && err.status === 422) {
-          throw new ApiError(err.status, 1, "Provided userId and refreshToken are invalid");
-        }
-        throw new ServerError(err.status, "Failed to refresh token");
-      }
+      token = await this.http
+        .post<AccessTokenResponse>(Config.backendUrl + "api/account/refresh-token", {
+          refreshToken: token.refreshToken,
+          userId: token.userId
+        })
+        .toPromise();
+      return token;
     }
   }
 
