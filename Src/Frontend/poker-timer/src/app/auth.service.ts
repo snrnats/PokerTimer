@@ -8,7 +8,6 @@ import { AccessTokenResponse } from "@app/auth/model/access-token-response";
 import { IErrorResponse } from "@app/api/error-response";
 import { ServerError } from "./api/errors/server-error";
 import { ApiError } from "./api/errors/api-error";
-import { convertHttpError } from "./api/errors/error-converter";
 
 @Injectable()
 export class AuthService {
@@ -16,16 +15,16 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   get isAuthenticated(): boolean {
-    return Boolean(this.getToken());
+    return Boolean(this.getCachedToken());
   }
 
   get isTokenFresh(): boolean {
-    const token = this.getToken();
+    const token = this.getCachedToken();
     return token && token.expires > new Date().getTime() / 1000;
   }
 
   getUserId(): string {
-    const t = this.getToken();
+    const t = this.getCachedToken();
     if (t !== null) {
       const data = jwt_decode(t.accessToken);
       if (data.hasOwnProperty("sub")) {
@@ -52,7 +51,7 @@ export class AuthService {
     this.router.navigate(["/login"]);
   }
 
-  getToken(): AccessTokenResponse | null {
+  getCachedToken(): AccessTokenResponse | null {
     const localToken = localStorage.getItem(AuthService.AccessTokenKey);
     return localToken ? JSON.parse(localToken) : null;
   }
@@ -61,12 +60,12 @@ export class AuthService {
     if (this.isAuthenticated && !this.isTokenFresh) {
       return await this.refreshToken();
     }
-    return this.getToken();
+    return this.getCachedToken();
   }
 
   public async refreshToken(): Promise<AccessTokenResponse> {
     if (this.isAuthenticated) {
-      let token = this.getToken();
+      let token = this.getCachedToken();
       token = await this.http
         .post<AccessTokenResponse>(Config.backendUrl + "api/account/refresh-token", {
           refreshToken: token.refreshToken,

@@ -10,6 +10,7 @@ import { TournamentSetup } from "@app/models/tournament-setup.model";
 import { SetupOwnerFilter } from "@app/api/setup-owner-filter";
 import { ApiError } from "@app/api/errors/api-error";
 import { IErrorResponse } from "@app/api/error-response";
+import { ApiClient } from "./api/api-client";
 
 const baseUrl = Config.backendUrl + "api/";
 const tournamentsEndpoint = baseUrl + "tournaments/";
@@ -18,44 +19,17 @@ const pauseEndpoint = "pause/";
 const resumeEndpoint = "resume/";
 @Injectable()
 export class ApiService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: ApiClient) {}
 
-  private handleError(error: any): never {
-    if (error instanceof HttpErrorResponse) {
-      if (error.error instanceof ErrorEvent) {
-        // A client-side or network error occurred. Handle it accordingly.
-        console.error("A network error occurred:", error.error.message);
-        throw error;
-      } else {
-        // The backend returned an unsuccessful response code.
-        // The response body may contain clues as to what went wrong,
-        console.error(`Backend returned code ${error.status}, ` + `body was: ${error.error}`);
-        const errorResponse = <IErrorResponse>JSON.parse(error.message);
-        throw new ApiError(error.status, errorResponse.code, errorResponse.message);
-      }
-    } else {
-      // An error in interceptor occured
-      throw error;
-    }
+  async getTournaments(): Promise<Tournament[]> {
+    return await this.http.get<Tournament[]>(tournamentsEndpoint);
   }
 
-  getTournaments() {
-    return this.http.get(tournamentsEndpoint, { responseType: "text" }).pipe(
-      catchError(this.handleError),
-      map(res => {
-        return JSON.parse(res, JsonRevivers.date);
-      })
-    );
+  async getTournament(id: number): Promise<Tournament> {
+    return await this.http.get<Tournament>(tournamentsEndpoint + `${id}`);
   }
 
-  getTournament(id: number): Observable<Tournament> {
-    return this.http.get(tournamentsEndpoint + `${id}`, { responseType: "text" }).pipe(
-      catchError(this.handleError),
-      map(res => JSON.parse(res, JsonRevivers.date))
-    );
-  }
-
-  createTournament(tournament: Tournament): Observable<Tournament> {
+  async createTournament(tournament: Tournament): Promise<Tournament> {
     return this.http.post(tournamentsEndpoint, tournament, { responseType: "text" }).pipe(
       catchError(this.handleError),
       map(res => JSON.parse(res, JsonRevivers.date))

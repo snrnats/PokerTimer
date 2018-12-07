@@ -14,7 +14,7 @@ export class AuthInterceptor implements HttpInterceptor {
     if (this.authService.isAuthenticated) {
       let token: AccessTokenResponse;
       if (this.authService.isTokenFresh) {
-        token = this.authService.getToken();
+        token = this.authService.getCachedToken();
       } else {
         token = await this.authService.refreshToken();
       }

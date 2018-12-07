@@ -8,7 +8,6 @@ import { AuthService } from "@app/auth.service";
   styleUrls: ["./login.component.css"]
 })
 export class LoginComponent implements OnInit {
-
   form: FormGroup;
 
   constructor(private fb: FormBuilder, private auth: AuthService) {
@@ -18,7 +17,5 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }
