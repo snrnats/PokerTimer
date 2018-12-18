@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { Tournament } from "@app/models/tournament.model";
 import { catchError, retry, map, retryWhen } from "rxjs/operators";
 
@@ -11,6 +11,8 @@ import { SetupOwnerFilter } from "@app/api/setup-owner-filter";
 import { ApiError } from "@app/api/errors/api-error";
 import { IErrorResponse } from "@app/api/error-response";
 import { ApiClient } from "./api/api-client";
+import { HttpPromiseClient } from "./api/http-promise-client";
+import { FuncEx2 } from "./shared/func/func-ex2";
 
 const baseUrl = Config.backendUrl + "api/";
 const tournamentsEndpoint = baseUrl + "tournaments/";
@@ -19,10 +21,16 @@ const pauseEndpoint = "pause/";
 const resumeEndpoint = "resume/";
 @Injectable()
 export class ApiService {
-  constructor(private http: ApiClient) {}
+  constructor(private http: ApiClient, private httpClient: HttpPromiseClient) {}
 
   async getTournaments(): Promise<Tournament[]> {
-    return await this.http.get<Tournament[]>(tournamentsEndpoint);
+    await new FuncEx2<string, HttpHeaders, Promise<Tournament[]>>((url, headers) => this.httpClient.get<Tournament[]>(url, headers))
+      .wrap(this.http.retry)
+      .wrap(this.http.wrapAuth)
+      .call(tournamentsEndpoint, new HttpHeaders());
+    return await this.http.wrapAuth((url, header) => this.httpClient.get<Tournament[]>(url, header), tournamentsEndpoint);
+    this.httpClient.get<Tournament[]>(tournamentsEndpoint, h);
+    //return await this.http.get<Tournament[]>(tournamentsEndpoint);
   }
 
   async getTournament(id: number): Promise<Tournament> {

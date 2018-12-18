@@ -5,6 +5,7 @@ import { ApiError } from "./errors/api-error";
 import { NetworkError } from "./errors/network-error";
 import { isErrorResponse } from "./error-response";
 import { HttpParamsOptions } from "@angular/common/http/src/params";
+import { Observable } from "rxjs";
 
 type AppErrors = ServerError | ApiError | NetworkError;
 
@@ -13,6 +14,10 @@ export class HttpPromiseClient {
 
   async get<T>(url: string, headers?: HttpHeaders): Promise<T> {
     return await this.request<T>("GET", url, undefined, headers);
+  }
+
+  getObs<T>(url: string, headers?: HttpHeaders): Observable<T> {
+    return this.http.get<T>(url, { headers: headers });
   }
 
   async post<T>(url: string, body: string, headers?: HttpHeaders): Promise<T> {
