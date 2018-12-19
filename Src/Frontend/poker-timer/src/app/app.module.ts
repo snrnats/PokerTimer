@@ -48,7 +48,6 @@ import { PageNotFoundComponent } from "@app/page-not-found/page-not-found.compon
 import { ConfirmDialogComponent } from "@app/shared/confirm-dialog/confirm-dialog.component";
 import { GlobalErrorHandler } from "@app/shared/global-error-handler";
 import { ToastService } from "@app/shared/toast.service";
-import { HttpErrorsInterceptor } from "./api/http-errors.interceptor";
 /*
 Add visibility to setups and tournaments: only me (private), not listed (by id), public
 Handle server and network errors

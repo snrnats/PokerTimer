@@ -6,35 +6,52 @@ import { NetworkError } from "./errors/network-error";
 import { isErrorResponse } from "./error-response";
 import { HttpParamsOptions } from "@angular/common/http/src/params";
 import { Observable } from "rxjs";
+import { HttpInterceptorParams } from "@app/api/http-interceptor-params";
+import { IInterceptorConfig } from "./interceptor-config";
 
 type AppErrors = ServerError | ApiError | NetworkError;
+type Query = { [param: string]: string | string[] };
 
 export class HttpPromiseClient {
   constructor(private http: HttpClient) {}
 
-  async get<T>(url: string, headers?: HttpHeaders): Promise<T> {
-    return await this.request<T>("GET", url, undefined, headers);
+  async get<T>(url: string, options?: { headers?: HttpHeaders; query?: Query; interceptorConfig?: IInterceptorConfig }): Promise<T> {
+    return await this.request<T>("GET", url, options);
+  }
+  async post<T>(
+    url: string,
+    body: any,
+    options?: { headers?: HttpHeaders; query?: Query; interceptorConfig?: IInterceptorConfig }
+  ): Promise<T> {
+    return await this.request<T>("POST", url, { ...options, body: body });
   }
 
-  getObs<T>(url: string, headers?: HttpHeaders): Observable<T> {
-    return this.http.get<T>(url, { headers: headers });
+  async put<T>(
+    url: string,
+    body: any,
+    options?: { headers?: HttpHeaders; query?: Query; interceptorConfig?: IInterceptorConfig }
+  ): Promise<T> {
+    return await this.request<T>("PUT", url, { ...options, body: body });
   }
 
-  async post<T>(url: string, body: string, headers?: HttpHeaders): Promise<T> {
-    return await this.request<T>("POST", url, body, headers);
+  async delete<T>(url: string, options?: { headers?: HttpHeaders; query?: Query; interceptorConfig?: IInterceptorConfig }): Promise<T> {
+    return await this.request<T>("DELETE", url, options);
   }
 
-  async put<T>(url: string, body: string, headers?: HttpHeaders): Promise<T> {
-    return await this.request<T>("PUT", url, body, headers);
-  }
-
-  async delete<T>(url: string, headers?: HttpHeaders): Promise<T> {
-    return await this.request<T>("DELETE", url, undefined, headers);
-  }
-
-  private async request<T>(method: string, url: string, body?: string, headers?: HttpHeaders): Promise<T> {
+  public async request<T>(
+    method: string,
+    url: string,
+    options: { body?: T; headers?: HttpHeaders; query?: Query; interceptorConfig?: IInterceptorConfig }
+  ): Promise<T> {
     try {
-      const responseText = await this.http.request(method, url, { body: body, headers: headers, responseType: "text" }).toPromise();
+      const responseText = await this.http
+        .request(method, url, {
+          body: options.body,
+          headers: options.headers,
+          responseType: "text",
+          params: new HttpInterceptorParams(options.interceptorConfig, options.query)
+        })
+        .toPromise();
       const result: T = JSON.parse(responseText, JsonRevivers.date);
       return result;
     } catch (e) {
