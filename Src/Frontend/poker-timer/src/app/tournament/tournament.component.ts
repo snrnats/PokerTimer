@@ -65,12 +65,12 @@ export class TournamentComponent implements OnInit, OnDestroy {
   }
 
   async onPaused(): Promise<void> {
-    this.tournament = await this.api.pauseTournament(this.tournament.id).toPromise();
+    this.tournament = await this.api.pauseTournament(this.tournament.id);
     this.endTournamentTracking();
   }
 
   async onResumed(): Promise<void> {
-    this.tournament = await this.api.resumeTournament(this.tournament.id).toPromise();
+    this.tournament = await this.api.resumeTournament(this.tournament.id);
     this.beginTournamentTracking();
   }
 

@@ -48,6 +48,8 @@ import { PageNotFoundComponent } from "@app/page-not-found/page-not-found.compon
 import { ConfirmDialogComponent } from "@app/shared/confirm-dialog/confirm-dialog.component";
 import { GlobalErrorHandler } from "@app/shared/global-error-handler";
 import { ToastService } from "@app/shared/toast.service";
+import { HttpPromiseClient } from "@app/api/http-promise-client";
+import { ValidationErrorComponent } from './custom-controls/validation-error/validation-error.component';
 /*
 Add visibility to setups and tournaments: only me (private), not listed (by id), public
 Handle server and network errors
@@ -67,7 +69,8 @@ Handle server and network errors
     SetupsComponent,
     SetupComponent,
     PageNotFoundComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    ValidationErrorComponent
   ],
   imports: [
     BrowserModule,
@@ -99,14 +102,10 @@ Handle server and network errors
     ApiService,
     DatePipe,
     ToastService,
+    HttpPromiseClient,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: HttpErrorsInterceptor,
       multi: true
     },
     { provide: ErrorHandler, useClass: GlobalErrorHandler }

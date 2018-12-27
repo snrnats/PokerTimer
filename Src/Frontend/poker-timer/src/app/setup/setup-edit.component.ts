@@ -72,15 +72,13 @@ export class SetupEditComponent implements OnInit {
     });
   }
 
-  submit(): void {
+  async submit(): Promise<void> {
     if (this.id !== null) {
-      this.api.updateSetup(Object.assign({ id: this.id }, this.form.value)).subscribe(res => {
-        this.router.navigateByUrl(`/setups/${this.id}`);
-      });
+      await this.api.updateSetup(Object.assign({ id: this.id }, this.form.value));
+      this.router.navigateByUrl(`/setups/${this.id}`);
     } else {
-      this.api.createSetup(this.form.value).subscribe(res => {
-        this.router.navigateByUrl(`/setups/${res.id}`);
-      });
+      const res = await this.api.createSetup(this.form.value);
+      this.router.navigateByUrl(`/setups/${res.id}`);
     }
   }
 

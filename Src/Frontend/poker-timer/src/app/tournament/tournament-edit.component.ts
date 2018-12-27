@@ -18,37 +18,36 @@ export class TournamentEditComponent implements OnInit {
   private id: number;
   form: FormGroup;
   setups: TournamentSetup[];
-  constructor(private fb: FormBuilder, private api: ApiService, private route: ActivatedRoute, private router: Router) {}
+  constructor(private fb: FormBuilder, private api: ApiService, private route: ActivatedRoute, private router: Router) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.route.paramMap
       .pipe(
-        switchMap((params: ParamMap) => {
+        switchMap(async (params: ParamMap) => {
           if (params.has("id")) {
             const tournamentId = Number(params.get("id"));
             return this.api.getTournament(tournamentId);
           }
-          let $setup: Observable<TournamentSetup>;
           const setupId = this.route.snapshot.queryParamMap.get("setupId");
+          this.setups = await this.api.getSetups(SetupOwnerFilter.Me);
+
+          let setup: TournamentSetup = null;
           if (setupId) {
-            $setup = this.api.getSetup(Number(setupId));
-          } else {
-            $setup = of<TournamentSetup>(null);
+            setup = await this.api.getSetup(Number(setupId));
+            if (this.setups.every((s) => s.id !== setup.id)) {
+              this.setups.push(setup);
+            }
           }
-          return $setup.pipe(
-            map(
-              setup =>
-                <Tournament>{
-                  id: null,
-                  title: `Tournament at ${formatDate(new Date(), "mm:ss", "en")}`,
-                  setup: setup,
-                  startDate: new Date(),
-                  pauseDuration: null,
-                  isPaused: false,
-                  pauseStart: undefined
-                }
-            )
-          );
+
+          return <Tournament>{
+            id: null,
+            title: `Tournament at ${formatDate(new Date(), "mm:ss", "en")}`,
+            setup: setup,
+            startDate: new Date(),
+            pauseDuration: null,
+            isPaused: false,
+            pauseStart: undefined
+          };
         })
       )
       .subscribe((res: Tournament) => {
@@ -59,18 +58,15 @@ export class TournamentEditComponent implements OnInit {
           setupId: [res.setup !== null ? res.setup.id : null, [Validators.required]]
         });
       });
-    this.api.getSetups(SetupOwnerFilter.Me).subscribe(res => (this.setups = res));
   }
 
-  submit(): void {
+  async submit(): Promise<void> {
     if (this.id !== null) {
-      this.api.updateTournament(Object.assign({ id: this.id }, this.form.value)).subscribe(res => {
-        this.router.navigateByUrl(`/tournaments/${this.id}`);
-      });
+      await this.api.updateTournament(Object.assign({ id: this.id }, this.form.value));
+      this.router.navigateByUrl(`/tournaments/${this.id}`);
     } else {
-      this.api.createTournament(this.form.value).subscribe(res => {
-        this.router.navigateByUrl(`/tournaments/${res.id}`);
-      });
+      const res = await this.api.createTournament(this.form.value);
+      this.router.navigateByUrl(`/tournaments/${res.id}`);
     }
   }
 }

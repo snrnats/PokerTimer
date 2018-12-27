@@ -77,16 +77,14 @@ export class SetupsComponent implements OnInit {
         this.router.navigateByUrl(`/setups/${setup.id}`);
     }
 
-    deleteSetup(setup: TournamentSetup): void {
+    deleteSetup(setup: TournamentSetup) {
         const openedDialog = this.dialog.open(ConfirmDialogComponent, { data: { title: `Delete setup '${setup.title}'` } });
-        openedDialog.afterClosed().subscribe(isConfirmed => {
+        openedDialog.afterClosed().subscribe(async isConfirmed => {
             if (isConfirmed) {
-                this.api.deleteSetup(setup.id).subscribe(res => {
-                    console.log(res);
-                    const index = this.dataSource.data.indexOf(setup);
-                    this.setups.splice(index, 1);
-                    this.dataSource.data = this.setups;
-                });
+                await this.api.deleteSetup(setup.id);
+                const index = this.dataSource.data.indexOf(setup);
+                this.setups.splice(index, 1);
+                this.dataSource.data = this.setups;
             }
         });
     }

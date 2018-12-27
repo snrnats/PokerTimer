@@ -4,6 +4,7 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { AccessTokenResponse } from "@app/auth/model/access-token-response";
 import { IErrorResponse } from "@app/api/error-response";
 import { Credentials } from "@app/models/credentials.model";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-register",
@@ -12,16 +13,17 @@ import { Credentials } from "@app/models/credentials.model";
 })
 export class RegisterComponent implements OnInit {
   form: FormGroup;
-  constructor(private fb: FormBuilder, private auth: AuthService) {
+  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
     this.form = fb.group({
       username: ["", [Validators.required, Validators.email]],
       password: ["", [Validators.required, Validators.minLength(6)]]
     });
   }
 
-  register(credentials: Credentials): Promise<AccessTokenResponse | IErrorResponse> {
-    return this.auth.register(credentials);
+  async register() {
+    await this.auth.register({ email: this.form.get("username").value, password: this.form.get("password").value });
+    this.router.navigate(["/"]);
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 }

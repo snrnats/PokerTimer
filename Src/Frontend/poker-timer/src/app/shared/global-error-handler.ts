@@ -8,14 +8,19 @@ export class GlobalErrorHandler extends ErrorHandler {
   }
 
   handleError(error: any): void {
+    this.handleErrorInternal(error);
+    //super.handleError(error);
+    console.error(error, {error: error});
+  }
+
+  private handleErrorInternal(error: any): void {
     const toastService = this.injector.get(ToastService);
     if ("rejection" in error) {
-      this.handleError(error.rejection);
+      this.handleErrorInternal(error.rejection);
     } else if (error instanceof Error) {
       toastService.showError(error.message);
     } else {
       toastService.showError(error);
     }
-    super.handleError(error);
   }
 }

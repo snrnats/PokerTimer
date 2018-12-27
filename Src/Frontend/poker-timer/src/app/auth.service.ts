@@ -8,11 +8,12 @@ import { AccessTokenResponse } from "@app/auth/model/access-token-response";
 import { IErrorResponse } from "@app/api/error-response";
 import { ServerError } from "./api/errors/server-error";
 import { ApiError } from "./api/errors/api-error";
+import { HttpPromiseClient } from "@app/api/http-promise-client";
 
 @Injectable()
 export class AuthService {
   private static readonly AccessTokenKey = "accessTokenResponse";
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpPromiseClient, private router: Router) { }
 
   get isAuthenticated(): boolean {
     return Boolean(this.getCachedToken());
@@ -35,15 +36,14 @@ export class AuthService {
   }
 
   async register(credentials: Credentials): Promise<AccessTokenResponse | IErrorResponse> {
-    const accessToken = await this.http.post<AccessTokenResponse>(Config.backendUrl + `api/account/register`, credentials).toPromise();
+    const accessToken = await this.http.post<AccessTokenResponse>(Config.backendUrl + `api/account/register`, credentials);
     this.authenticate(accessToken);
     return accessToken;
   }
 
-  login(credentials: Credentials): void {
-    this.http.post<AccessTokenResponse>(Config.backendUrl + `api/account/token`, credentials).subscribe(res => {
-      this.authenticate(res);
-    });
+  async login(credentials: Credentials): Promise<void> {
+    const accessToken = await this.http.post<AccessTokenResponse>(Config.backendUrl + `api/account/token`, credentials);
+    this.authenticate(accessToken);
   }
 
   logout(): void {
@@ -51,7 +51,7 @@ export class AuthService {
     this.router.navigate(["/login"]);
   }
 
-  getCachedToken(): AccessTokenResponse | null {
+  getCachedToken(): AccessTokenResponse {
     const localToken = localStorage.getItem(AuthService.AccessTokenKey);
     return localToken ? JSON.parse(localToken) : null;
   }
@@ -70,14 +70,13 @@ export class AuthService {
         .post<AccessTokenResponse>(Config.backendUrl + "api/account/refresh-token", {
           refreshToken: token.refreshToken,
           userId: token.userId
-        })
-        .toPromise();
+        });
+        this.authenticate(token);
       return token;
     }
   }
 
   private authenticate(accessTokenResponse: AccessTokenResponse): void {
     localStorage.setItem(AuthService.AccessTokenKey, JSON.stringify(accessTokenResponse));
-    this.router.navigate(["/"]);
   }
 }

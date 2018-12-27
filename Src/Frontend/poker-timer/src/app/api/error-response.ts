@@ -4,5 +4,5 @@ export interface IErrorResponse {
 }
 
 export function isErrorResponse(error: any): error is IErrorResponse {
-  return typeof error.code === "number" && typeof error.message === "string";
+  return error && typeof error.code === "number" && typeof error.message === "string";
 }

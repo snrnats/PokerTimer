@@ -2,7 +2,9 @@
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using PokerTimer.Api.Exceptions;
 using PokerTimer.Api.ViewModel;
@@ -12,12 +14,14 @@ namespace PokerTimer.Api.Middlewares
     public class ExceptionHandlingMiddleware
     {
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+        private readonly IOptions<MvcJsonOptions> _jsonOptions;
         private readonly RequestDelegate _next;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger, IOptions<MvcJsonOptions> jsonOptions)
         {
             _next = next;
             _logger = logger;
+            _jsonOptions = jsonOptions;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -64,7 +68,7 @@ namespace PokerTimer.Api.Middlewares
             
             context.Response.StatusCode = (int) status;
             var response = new ErrorResponse(e.Code, e.Message);
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(response, _jsonOptions.Value.SerializerSettings));
             return true;
         }
     }

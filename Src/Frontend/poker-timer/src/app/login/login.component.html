@@ -1,9 +1,10 @@
-<form [formGroup]="form" (ngSubmit)="auth.login(form.value)">
+<form [formGroup]="form" (ngSubmit)="signIn()">
   <mat-form-field class="fullWidth">
     <input matInput type="email" name="email" placeholder="Email" formControlName="username">
-  </mat-form-field>  
+  </mat-form-field>
   <mat-form-field class="fullWidth">
     <input matInput type="password" name="password" placeholder="Password" formControlName="password">
   </mat-form-field>
+  <app-validation-error [errorMessage]="errorMessage"></app-validation-error>
   <button mat-raised-button color="primary" type="submit" [disabled]="!form.valid">Login</button>
 </form>

@@ -2,7 +2,6 @@ import { Injectable } from "@angular/core";
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from "@angular/common/http";
 import { Observable, from } from "rxjs";
 import { AuthService } from "@app/auth.service";
-import { UnauthorizedError } from "@app/auth/errors/unauthorized-error";
 import { AccessTokenResponse } from "@app/auth/model/access-token-response";
 import { Router } from "@angular/router";
 import { HttpInterceptorParams } from "@app/api/http-interceptor-params";
@@ -17,12 +16,12 @@ export class AuthInterceptor extends ApiInterceptor {
   }
 
   async interceptAsync(req: HttpRequest<any>, interceptorParams: HttpInterceptorParams, next: HttpHandler): Promise<HttpEvent<any>> {
-    if (!interceptorParams.interceptorConfig.authorize) {
+    if (!interceptorParams.interceptorConfig || !interceptorParams.interceptorConfig.authorize) {
       return next.handle(req).toPromise();
     }
 
     let token = this.authService.getCachedToken();
-    if (!token || !token.isFresh) {
+    if (!token || !this.isTokenFresh(token)) {
       token = await this.authService.refreshToken();
     }
     let authRequest = req.clone({
@@ -41,5 +40,9 @@ export class AuthInterceptor extends ApiInterceptor {
       }
       throw e;
     }
+  }
+
+  private isTokenFresh(token: AccessTokenResponse) {
+    return token.expires > new Date().getTime() / 1000;
   }
 }

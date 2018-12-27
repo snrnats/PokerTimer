@@ -3,17 +3,19 @@ import { JsonRevivers } from "@app/shared/json-revivers";
 import { ServerError } from "./errors/server-error";
 import { ApiError } from "./errors/api-error";
 import { NetworkError } from "./errors/network-error";
-import { isErrorResponse } from "./error-response";
+import { isErrorResponse, IErrorResponse } from "./error-response";
 import { HttpParamsOptions } from "@angular/common/http/src/params";
 import { Observable } from "rxjs";
 import { HttpInterceptorParams } from "@app/api/http-interceptor-params";
 import { IInterceptorConfig } from "./interceptor-config";
+import { Injectable } from "@angular/core";
 
 type AppErrors = ServerError | ApiError | NetworkError;
 type Query = { [param: string]: string | string[] };
 
+@Injectable()
 export class HttpPromiseClient {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   async get<T>(url: string, options?: { headers?: HttpHeaders; query?: Query; interceptorConfig?: IInterceptorConfig }): Promise<T> {
     return await this.request<T>("GET", url, options);
@@ -46,10 +48,10 @@ export class HttpPromiseClient {
     try {
       const responseText = await this.http
         .request(method, url, {
-          body: options.body,
-          headers: options.headers,
+          body: options ? options.body : undefined,
+          headers: options ? options.headers : undefined,
           responseType: "text",
-          params: new HttpInterceptorParams(options.interceptorConfig, options.query)
+          params: new HttpInterceptorParams(options ? options.interceptorConfig : undefined, options ? options.query : undefined)
         })
         .toPromise();
       const result: T = JSON.parse(responseText, JsonRevivers.date);
@@ -62,13 +64,15 @@ export class HttpPromiseClient {
     }
   }
 
-  private convertHttpError(error: HttpErrorResponse): AppErrors {
-    if (error.status === 0) {
-      return new NetworkError(error.message);
-    } else if (isErrorResponse(error.error)) {
-      return new ApiError(error.status, error.error.code, error.error.message);
+  private convertHttpError(res: HttpErrorResponse): AppErrors {
+    if (res.status === 0) {
+      return new NetworkError(res.message);
+    }
+    const error = typeof res.error === "string" ? JSON.parse(res.error) : res.error;
+    if (isErrorResponse(error)) {
+      return new ApiError(res.status, error.code, error.message, res);
     } else {
-      return new ServerError(error.status, error.message);
+      return new ServerError(res.status, res.message, res);
     }
   }
 }

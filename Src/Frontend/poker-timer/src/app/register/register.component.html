@@ -1,4 +1,4 @@
-<form [formGroup]="form" (ngSubmit)="auth.register(form.value)">
+<form [formGroup]="form" (ngSubmit)="register()">
   <mat-form-field class="fullWidth">
     <input matInput type="email" name="email" placeholder="Email" formControlName="username">
   </mat-form-field>

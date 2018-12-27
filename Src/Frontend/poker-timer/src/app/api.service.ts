@@ -20,10 +20,10 @@ const pauseEndpoint = "pause/";
 const resumeEndpoint = "resume/";
 @Injectable()
 export class ApiService {
-  constructor(private http: HttpPromiseClient) {}
+  constructor(private http: HttpPromiseClient) { }
 
   async getTournaments(): Promise<Tournament[]> {
-    return await this.http.get<Tournament[]>(tournamentsEndpoint);
+    return await this.http.get<Tournament[]>(tournamentsEndpoint, { interceptorConfig: { authorize: true } });
   }
 
   async getTournament(id: number): Promise<Tournament> {
@@ -43,26 +43,26 @@ export class ApiService {
   }
 
   createSetup(setup: TournamentSetup): Promise<TournamentSetup> {
-    return this.http.post(setupsEndpoint, setup);
+    return this.http.post(setupsEndpoint, setup, { interceptorConfig: { authorize: true } });
   }
 
   updateSetup(setup: TournamentSetup): Promise<void> {
-    return this.http.put(setupsEndpoint + `${setup.id}`, setup);
+    return this.http.put(setupsEndpoint + `${setup.id}`, setup, { interceptorConfig: { authorize: true } });
   }
 
   deleteSetup(id: number): Promise<void> {
-    return this.http.delete(setupsEndpoint + `${id}`);
+    return this.http.delete(setupsEndpoint + `${id}`, { interceptorConfig: { authorize: true } });
   }
 
   getSetup(id: number): Promise<TournamentSetup> {
-    return this.http.get(setupsEndpoint + `${id}`);
+    return this.http.get(setupsEndpoint + `${id}`, { interceptorConfig: { authorize: true } });
   }
 
   pauseTournament(id: number): Promise<Tournament> {
-    return this.http.put<Tournament>(tournamentsEndpoint + `${id}/pause`, "");
+    return this.http.put<Tournament>(tournamentsEndpoint + `${id}/pause`, "", { interceptorConfig: { authorize: true } });
   }
 
   resumeTournament(id: number): Promise<Tournament> {
-    return this.http.put<Tournament>(tournamentsEndpoint + `${id}/resume`, "");
+    return this.http.put<Tournament>(tournamentsEndpoint + `${id}/resume`, "", { interceptorConfig: { authorize: true } });
   }
 }
