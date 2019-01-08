@@ -44,6 +44,13 @@ namespace PokerTimer.Api.Middlewares
                     throw;
                 }
             }
+            catch (ValidationException e)
+            {
+                if (!await TryWriteError(context, HttpStatusCode.UnprocessableEntity, new ValidationErrorResponse(e.Code, e.Message, e.ValidationErrors)))
+                {
+                    throw;
+                }
+            }
             catch (DomainException e)
             {
                 if (!await TryWriteError(context, HttpStatusCode.UnprocessableEntity, new ErrorResponse(e.Code, e.Message)))
@@ -67,8 +74,7 @@ namespace PokerTimer.Api.Middlewares
             }
             
             context.Response.StatusCode = (int) status;
-            var response = new ErrorResponse(e.Code, e.Message);
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(response, _jsonOptions.Value.SerializerSettings));
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(e, _jsonOptions.Value.SerializerSettings));
             return true;
         }
     }

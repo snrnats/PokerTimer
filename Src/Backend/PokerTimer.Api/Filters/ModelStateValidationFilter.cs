@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using PokerTimer.Api.ViewModel;
 
@@ -20,8 +21,10 @@ namespace PokerTimer.Api.Filters
                 }
                 else
                 {
-                    throw new PokerTimer.Api.Exceptions.ValidationException(context.ModelState.ToString(), context.ModelState.Values.SelectMany(v=> v.Errors.Select(e => new ValidationErrorItem("",""))));
-                    context.Result = new UnprocessableEntityObjectResult(context.ModelState);
+                    var validationErrors = context.ModelState
+                        .Where(pair => pair.Value.ValidationState == ModelValidationState.Invalid)
+                        .SelectMany(pair => pair.Value.Errors.Select(error => new ValidationErrorItem(pair.Key, error.ErrorMessage))).ToArray();
+                    throw new Exceptions.ValidationException(validationErrors.First().Message, validationErrors);
                 }
             }
         }
