@@ -13,7 +13,7 @@ import { HttpPromiseClient } from "@app/api/http-promise-client";
 @Injectable()
 export class AuthService {
   private static readonly AccessTokenKey = "accessTokenResponse";
-  constructor(private http: HttpPromiseClient, private router: Router) { }
+  constructor(private http: HttpPromiseClient, private router: Router) {}
 
   get isAuthenticated(): boolean {
     return Boolean(this.getCachedToken());
@@ -66,12 +66,11 @@ export class AuthService {
   public async refreshToken(): Promise<AccessTokenResponse> {
     if (this.isAuthenticated) {
       let token = this.getCachedToken();
-      token = await this.http
-        .post<AccessTokenResponse>(Config.backendUrl + "api/account/refresh-token", {
-          refreshToken: token.refreshToken,
-          userId: token.userId
-        });
-        this.authenticate(token);
+      token = await this.http.post<AccessTokenResponse>(Config.backendUrl + "api/account/refresh-token", {
+        refreshToken: token.refreshToken,
+        userId: token.userId
+      });
+      this.authenticate(token);
       return token;
     }
   }

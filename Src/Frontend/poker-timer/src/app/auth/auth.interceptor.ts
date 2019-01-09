@@ -1,9 +1,7 @@
 import { Injectable } from "@angular/core";
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from "@angular/common/http";
-import { Observable, from } from "rxjs";
+import { HttpRequest, HttpHandler, HttpEvent } from "@angular/common/http";
 import { AuthService } from "@app/auth.service";
 import { AccessTokenResponse } from "@app/auth/model/access-token-response";
-import { Router } from "@angular/router";
 import { HttpInterceptorParams } from "@app/api/http-interceptor-params";
 import { ApiInterceptor } from "@app/api/api-interceptor";
 import { ApiError } from "@app/api/errors/api-error";
@@ -11,7 +9,7 @@ import * as HttpStatus from "http-status-codes";
 
 @Injectable()
 export class AuthInterceptor extends ApiInterceptor {
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(private authService: AuthService) {
     super();
   }
 
@@ -19,7 +17,6 @@ export class AuthInterceptor extends ApiInterceptor {
     if (!interceptorParams.interceptorConfig || !interceptorParams.interceptorConfig.authorize) {
       return next.handle(req).toPromise();
     }
-
     let token = this.authService.getCachedToken();
     if (!token || !this.isTokenFresh(token)) {
       token = await this.authService.refreshToken();
