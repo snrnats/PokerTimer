@@ -10,9 +10,9 @@ namespace PokerTimer.Api.Services
 {
     public class TournamentService
     {
-        private readonly TournomentContext _context;
+        private readonly DbContext _context;
 
-        public TournamentService(TournomentContext context)
+        public TournamentService(DbContext context)
         {
             _context = context;
         }

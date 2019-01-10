@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PokerTimer.Api.Auth;
+using PokerTimer.Api.Models.Tournament;
 
 namespace PokerTimer.Api
 {
-    public class AccountContext : IdentityDbContext
+    public class DbContext : IdentityDbContext<PokerUser>
     {
-        public AccountContext(DbContextOptions<AccountContext> options) : base(options)
+        public DbContext(DbContextOptions<DbContext> options) : base(options)
         {
         }
 
@@ -15,5 +16,11 @@ namespace PokerTimer.Api
             base.OnModelCreating(builder);
             builder.Entity<PokerUser>().HasIndex(user => user.RefreshToken).IsUnique();
         }
+
+
+
+        public DbSet<Tournament> Tournaments { get; set; }
+
+        public DbSet<Setup> Setups { get; set; }
     }
 }

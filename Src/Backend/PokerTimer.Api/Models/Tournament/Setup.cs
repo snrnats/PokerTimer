@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
+using PokerTimer.Api.Auth;
 
 namespace PokerTimer.Api.Models.Tournament
 {
@@ -8,6 +10,7 @@ namespace PokerTimer.Api.Models.Tournament
         public int Id { get; set; }
         public string Title { get; set; }
         public string OwnerId { get; set; }
+        public PokerUser Owner { get; set; }
         [JsonIgnore]
         public bool AddToFavorites { get; set; }
 

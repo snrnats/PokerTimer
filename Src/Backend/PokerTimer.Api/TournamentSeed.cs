@@ -11,7 +11,7 @@ namespace PokerTimer.Api
 {
     public class TournamentSeed
     {
-        public async Task SeedAsync(TournomentContext context, IServiceProvider services, object logger, object settings)
+        public async Task SeedAsync(DbContext context, IServiceProvider services, object logger, object settings)
         {
             var user = new PokerUser("a@a.aa") {Email = "a@a.aa", RefreshToken = "refreshtoken1"};
             var userManager = services.GetService<UserManager<PokerUser>>();

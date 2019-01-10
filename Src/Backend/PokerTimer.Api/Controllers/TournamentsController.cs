@@ -16,10 +16,10 @@ namespace PokerTimer.Api.Controllers
     [Route("api/tournaments")]
     public class TournamentsController : Controller
     {
-        private readonly TournomentContext _context;
+        private readonly DbContext _context;
         private readonly TournamentService _tournamentService;
 
-        public TournamentsController(TournomentContext context, TournamentService tournamentService)
+        public TournamentsController(DbContext context, TournamentService tournamentService)
         {
             _context = context;
             _tournamentService = tournamentService;

@@ -19,7 +19,7 @@ namespace PokerTimer.Api.Controllers
     [ApiController]
     public class AccountController : Controller
     {
-        private static readonly TimeSpan AccessTokenLifeTime = TimeSpan.FromSeconds(15);
+        private static readonly TimeSpan AccessTokenLifeTime = TimeSpan.FromMinutes(30);
         private readonly SignInManager<PokerUser> _signInManager;
         private readonly UserManager<PokerUser> _userManager;
 

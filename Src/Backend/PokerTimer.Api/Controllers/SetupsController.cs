@@ -13,9 +13,9 @@ namespace PokerTimer.Api.Controllers
     [Route("api/setups")]
     public class SetupsController : Controller
     {
-        private readonly TournomentContext _context;
+        private readonly DbContext _context;
 
-        public SetupsController(TournomentContext context)
+        public SetupsController(DbContext context)
         {
             _context = context;
         }
@@ -67,6 +67,12 @@ namespace PokerTimer.Api.Controllers
 
             var storedSetup = await _context.Setups.AsNoTracking().Include(s => s.Levels)
                 .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (storedSetup == null)
+            {
+                return NotFound(id);
+            }
+
             var userId = User.GetUserId();
             if (storedSetup.OwnerId != userId)
             {

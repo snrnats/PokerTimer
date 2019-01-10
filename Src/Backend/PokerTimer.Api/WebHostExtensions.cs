@@ -10,7 +10,7 @@ namespace PokerTimer.Api
 {
     public static class WebHostExtensions
     {
-        public static IWebHost MigrateDbContext<TContext>(this IWebHost webHost, Action<TContext,IServiceProvider> seeder) where TContext : DbContext
+        public static IWebHost MigrateDbContext<TContext>(this IWebHost webHost, Action<TContext,IServiceProvider> seeder) where TContext : Microsoft.EntityFrameworkCore.DbContext
         {
             using (var scope = webHost.Services.CreateScope())
             {

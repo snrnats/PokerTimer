@@ -10,9 +10,9 @@ namespace PokerTimer.Api
         public static void Main(string[] args)
         {
             BuildWebHost(args)
-                .MigrateDbContext<TournomentContext>(((context, services) =>
+                .MigrateDbContext<DbContext>(((context, services) =>
                 {
-                    var logger = services.GetService(typeof(ILogger<TournomentContext>));
+                    var logger = services.GetService(typeof(ILogger<DbContext>));
                     var settings = services.GetService(typeof(IConfiguration));
                     new TournamentSeed()
                         .SeedAsync(context, services, logger, settings)

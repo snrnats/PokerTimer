@@ -27,10 +27,10 @@ namespace PokerTimer.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<TournomentContext>(builder => builder.UseInMemoryDatabase("tournoments"));
-            services.AddDbContext<AccountContext>(builder => builder.UseInMemoryDatabase("accounts"));
+            services.AddDbContext<DbContext>(builder =>
+                builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<PokerUser, IdentityRole>().AddEntityFrameworkStores<AccountContext>();
+            services.AddIdentity<PokerUser, IdentityRole>().AddEntityFrameworkStores<DbContext>();
 
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is the secret phrase"));
 

@@ -26,8 +26,8 @@ namespace PokerTimer.Api.Models.Tournament
         public int Index { get; set; }
         [JsonIgnore]
         public int SetupId { get; set; }
-        [JsonConverter(typeof(TimeSpanJsonConverter), TimeSpan.TicksPerSecond)]
-        [Range(1, 100)]
+        [JsonConverter(typeof(TimeSpanJsonConverter), TimeSpan.TicksPerMinute)]
+        [Range(typeof(TimeSpan), "00:00", "00:15")]
         public TimeSpan Duration { get; set; }
         public int SmallBlind { get; set; }
         public int BigBlind { get; set; }
