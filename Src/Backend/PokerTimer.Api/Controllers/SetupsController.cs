@@ -70,7 +70,7 @@ namespace PokerTimer.Api.Controllers
 
             if (storedSetup == null)
             {
-                return NotFound(id);
+                return await PostSetup(setup);
             }
 
             var userId = User.GetUserId();

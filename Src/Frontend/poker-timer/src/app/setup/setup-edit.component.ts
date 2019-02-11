@@ -25,50 +25,56 @@ export class SetupEditComponent implements OnInit {
   private id: number;
   form: FormGroup;
   levels: SetupLevel[];
-  constructor(private fb: FormBuilder, private api: ApiService, private route: ActivatedRoute, private router: Router) { }
+  constructor(private fb: FormBuilder, private api: ApiService, private route: ActivatedRoute, private router: Router) {}
 
   get levelForms(): FormArray {
     return this.form.get("levels") as FormArray;
   }
 
   ngOnInit() {
-    this.route.paramMap.pipe(switchMap((params: ParamMap) => {
-      if (params.has("id")) {
-        const id = Number(params.get("id"));
-        return this.api.getSetup(id);
-      }
-      return new Observable<TournamentSetup>(sub => sub.next({
-        id: null,
-        ownerId: null,
-        title: null,
-        startingChips: null,
-        numberOfPlayers: null,
-        isInfinite: false,
-        infiniteMultiplier: null,
-        levels: []
-      }));
-    })).subscribe(res => {
-      this.id = res.id;
+    this.route.paramMap
+      .pipe(
+        switchMap((params: ParamMap) => {
+          if (params.has("id")) {
+            const id = Number(params.get("id"));
+            return this.api.getSetup(id);
+          }
+          return new Observable<TournamentSetup>(sub =>
+            sub.next({
+              id: null,
+              ownerId: null,
+              title: null,
+              startingChips: null,
+              numberOfPlayers: null,
+              isInfinite: false,
+              infiniteMultiplier: null,
+              levels: []
+            })
+          );
+        })
+      )
+      .subscribe(res => {
+        this.id = res.id;
 
-      this.form = this.fb.group({
-        title: [res.title, [Validators.required]],
-        startingChips: [res.startingChips, [Validators.required]],
-        numberOfPlayers: [res.numberOfPlayers, [Validators.required]],
-        isInfinite: [res.isInfinite, [Validators.required]],
-        infiniteMultiplier: [res.infiniteMultiplier, []],
-        levels: this.fb.array(res.levels.map(this.getLevelGroup, this), [Validators.required])
+        this.form = this.fb.group({
+          title: [res.title, [Validators.required]],
+          startingChips: [res.startingChips, [Validators.required]],
+          numberOfPlayers: [res.numberOfPlayers, [Validators.required]],
+          isInfinite: [res.isInfinite, [Validators.required]],
+          infiniteMultiplier: [res.infiniteMultiplier, []],
+          levels: this.fb.array(res.levels.map(this.createLevelGroup, this), [Validators.required])
+        });
+        this.form.get("infiniteMultiplier").setValidators([CustomValidators.optionalValidation("isInfinite", v => v, Validators.required)]);
+        this.levels = this.levelForms.value;
       });
-      this.form.get("infiniteMultiplier").setValidators([CustomValidators.optionalValidation("isInfinite", (v) => v, Validators.required)]);
-      this.levels = this.levelForms.value;
-    });
   }
 
-  getLevelGroup(level: SetupLevel): FormGroup {
+  createLevelGroup(level: SetupLevel): FormGroup {
     return this.fb.group({
       duration: [level.duration, [Validators.required, Validators.min(0)]],
       smallBlind: [level.smallBlind, [Validators.required, Validators.min(0)]],
       bigBlind: [level.bigBlind, [Validators.required, Validators.min(0)]],
-      ante: [level.ante, [Validators.required, Validators.min(0)]],
+      ante: [level.ante, [Validators.required, Validators.min(0)]]
     });
   }
 
@@ -83,7 +89,21 @@ export class SetupEditComponent implements OnInit {
   }
 
   addLevel(): void {
-    this.levelForms.push(this.getLevelGroup({ duration: 0, smallBlind: 0, bigBlind: 0, ante: 0 }));
+    const levels: SetupLevel[] = this.levelForms.value;
+    let newLevel: SetupLevel;
+    if (levels.length > 0) {
+      const lastLevel = levels[levels.length - 1];
+      const blindMultiplier = this.form.get("infiniteMultiplier").value || 2;
+      newLevel = {
+        duration: lastLevel.duration,
+        smallBlind: lastLevel.smallBlind * blindMultiplier,
+        bigBlind: lastLevel.bigBlind * blindMultiplier,
+        ante: lastLevel.ante * blindMultiplier
+      };
+    } else {
+      newLevel = { duration: 15, smallBlind: 10, bigBlind: 20, ante: 0 };
+    }
+    this.levelForms.push(this.createLevelGroup(newLevel));
     this.levels = this.levelForms.value;
   }
 
@@ -91,5 +111,4 @@ export class SetupEditComponent implements OnInit {
     this.levelForms.removeAt(index);
     this.levels = this.levelForms.value;
   }
-
 }
