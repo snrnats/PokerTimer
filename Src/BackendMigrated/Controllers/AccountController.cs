@@ -3,13 +3,11 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PokerTimer.Api.Auth;
-using PokerTimer.Api.Exceptions;
-using PokerTimer.Api.ViewModel;
 
 namespace PokerTimer.Api.Controllers;
 
 [Produces("application/json")]
-[Route("api/account")]
+[Route("api/accounts")]
 [ApiController]
 public class AccountController : ControllerBase
 {
@@ -30,37 +28,26 @@ public class AccountController : ControllerBase
 
             if (!result.Succeeded)
             {
-                ThrowException(result);
+                return Results.Problem(result.Errors.First().Description, statusCode: StatusCodes.Status400BadRequest);
             }
 
-            await _signInManager.SignInAsync(user, false);
+            await _signInManager.SignInAsync(user, true);
 
             return BuildAuthorizedResult(user);
         }
 
-    [HttpPost("token")]
-    public async Task<IResult> SignIn([FromBody] Credentials credentials)
+    [HttpPost("login")]
+    public async Task<IResult> Login([FromBody] Credentials credentials)
     {
         var result = await _signInManager.PasswordSignInAsync(credentials.Username, credentials.Password, true, false);
         if (!result.Succeeded)
-            throw new ValidationException("Invalid Username or Password", new ValidationErrorItem[] { });
+            return Results.Problem( "Invalid Username or Password", statusCode: StatusCodes.Status401Unauthorized);
 
         var user = await _userManager.FindByNameAsync(credentials.Username);
         return BuildAuthorizedResult(user!);
     }
 
-    private static IResult BuildAuthorizedResult(PokerUser user)
-    {
-        return Results.SignIn(new ClaimsPrincipal(
-                new ClaimsIdentity(new Claim[]
-                {
-                    new Claim("user_id", user.Id)
-                }, AuthConts.CookieAuthSchema)),
-            properties: new AuthenticationProperties(){ IsPersistent = true},
-            authenticationScheme: AuthConts.CookieAuthSchema);
-    }
-
-    [HttpPost("loginAnonymous")]
+    [HttpPost("login-anonymous")]
     public async Task<IResult> LoginAnonymous([FromBody] AnonymousCredentials credentials)
     {
         var existingUser = await _userManager.FindByIdAsync(credentials.DeviceId);
@@ -72,7 +59,7 @@ public class AccountController : ControllerBase
 
             if (!result.Succeeded)
             {
-                ThrowException(result);
+                return Results.Problem(result.Errors.First().Description, statusCode: StatusCodes.Status401Unauthorized);
             }
 
             existingUser = user;
@@ -81,21 +68,14 @@ public class AccountController : ControllerBase
         return BuildAuthorizedResult(existingUser);
     }
 
-    private static void ThrowException(IdentityResult identityResult)
+    private static IResult BuildAuthorizedResult(PokerUser user)
     {
-        if (!identityResult.Succeeded)
-        {
-            var items = new List<ValidationErrorItem>();
-            foreach (var error in identityResult.Errors)
-                if (error.Code == nameof(IdentityErrorDescriber.DuplicateUserName))
+        return Results.SignIn(new ClaimsPrincipal(
+                new ClaimsIdentity(new[]
                 {
-                    var item = new ValidationErrorItem(nameof(Credentials.Username), error.Description);
-                    items.Add(item);
-                }
-
-            if (items.Any()) throw new ValidationException("Can't register an account", items);
-        }
-
-        throw new DomainException(ErrorCode.IdentityError, string.Join(", ", identityResult.Errors));
+                    new Claim("user_id", user.Id)
+                }, AuthConts.CookieAuthSchema)),
+            properties: new AuthenticationProperties { IsPersistent = true},
+            authenticationScheme: AuthConts.CookieAuthSchema);
     }
 }

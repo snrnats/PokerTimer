@@ -16,6 +16,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddDbContext<AccountContext>(o => o.UseInMemoryDatabase("InMemory"));
 builder.Services.AddIdentity<PokerUser, IdentityRole>(o => { })
     .AddEntityFrameworkStores<AccountContext>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
@@ -27,7 +28,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
 

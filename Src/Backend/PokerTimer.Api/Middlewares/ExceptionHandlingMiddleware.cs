@@ -42,7 +42,7 @@ namespace PokerTimer.Api.Middlewares
             }
             catch (DomainException e)
             {
-                if (!await TryWriteError(context, HttpStatusCode.UnprocessableEntity, new ErrorResponse(e.Code, e.Message)))
+                if (!await TryWriteError(context, HttpStatusCode.UnpnrocessableEntity, new ErrorResponse(e.Code, e.Message)))
                 {
                     throw;
                 }
