@@ -1,8 +1,9 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { JsonRevivers } from "@app/shared/json-revivers";
 import { ServerError } from "./errors/server-error";
 import { ApiError } from "./errors/api-error";
 import { NetworkError } from "./errors/network-error";
+import { isErrorResponse } from "./error-response";
 type AppErrors = ServerError | ApiError | NetworkError;
 export class HttpApiClient {
   constructor(private http: HttpClient) {}
