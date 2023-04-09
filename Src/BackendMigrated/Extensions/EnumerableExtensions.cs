@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 
 namespace PokerTimer.Api.Extensions
 {
@@ -12,6 +10,7 @@ namespace PokerTimer.Api.Extensions
             {
                 return collection;
             }
+
             if (source is IList<T> list)
             {
                 return new ReadOnlyCollection<T>(list);

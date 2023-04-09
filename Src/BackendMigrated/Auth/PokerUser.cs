@@ -11,5 +11,4 @@ public class PokerUser : IdentityUser
     public PokerUser(string userName) : base(userName)
     {
     }
-    
 }

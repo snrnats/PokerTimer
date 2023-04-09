@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PokerTimer.Api.Exceptions
+﻿namespace PokerTimer.Api.Exceptions
 {
     public class NotFoundException : DomainException
     {
@@ -8,7 +6,8 @@ namespace PokerTimer.Api.Exceptions
         {
         }
 
-        public NotFoundException(string message, Exception innerException) : base(ErrorCode.NotFound, message, innerException)
+        public NotFoundException(string message, Exception innerException) : base(ErrorCode.NotFound, message,
+            innerException)
         {
         }
     }

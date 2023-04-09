@@ -19,8 +19,8 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  register(credentials: Credentials): Promise<AccessTokenResponse | IErrorResponse> {
-    return this.auth.register(credentials);
+  async register(credentials: Credentials): Promise<void> {
+    await this.auth.register(credentials);
   }
 
   ngOnInit() {}

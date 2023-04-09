@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PokerTimer.Api.Exceptions
+﻿namespace PokerTimer.Api.Exceptions
 {
     public class NoPermissionsException : DomainException
     {
@@ -8,7 +6,8 @@ namespace PokerTimer.Api.Exceptions
         {
         }
 
-        public NoPermissionsException(string message, Exception innerException) : base(ErrorCode.NoPermissions, message, innerException)
+        public NoPermissionsException(string message, Exception innerException) : base(ErrorCode.NoPermissions, message,
+            innerException)
         {
         }
     }

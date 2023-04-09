@@ -1,4 +1,4 @@
-﻿namespace PokerTimer.Api.ViewModel
+﻿namespace PokerTimer.Api.Exceptions
 {
     public class ValidationErrorItem
     {

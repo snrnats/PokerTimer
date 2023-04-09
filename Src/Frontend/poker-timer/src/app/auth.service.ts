@@ -35,14 +35,12 @@ export class AuthService {
     return null;
   }
 
-  async register(credentials: Credentials): Promise<AccessTokenResponse | IErrorResponse> {
-    const accessToken = await this.http.post<AccessTokenResponse>(Config.backendUrl + `api/account/register`, credentials).toPromise();
-    this.authenticate(accessToken);
-    return accessToken;
+  async register(credentials: Credentials): Promise<void> {
+    await this.http.post(Config.backendUrl + `api/accounts/register`, credentials, { withCredentials: true}).toPromise();
   }
 
   login(credentials: Credentials): void {
-    this.http.post<AccessTokenResponse>(Config.backendUrl + `api/account/token`, credentials).subscribe(res => {
+    this.http.post<AccessTokenResponse>(Config.backendUrl + `api/accounts/login`, credentials).subscribe(res => {
       this.authenticate(res);
     });
   }
@@ -68,7 +66,7 @@ export class AuthService {
     if (this.isAuthenticated) {
       let token = this.getToken();
       token = await this.http
-        .post<AccessTokenResponse>(Config.backendUrl + "api/account/refresh-token", {
+        .post<AccessTokenResponse>(Config.backendUrl + "api/accounts/refresh-token", {
           refreshToken: token.refreshToken,
           userId: token.userId
         })

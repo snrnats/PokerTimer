@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PokerTimer.Api.Exceptions
+﻿namespace PokerTimer.Api.Exceptions
 {
     public class DomainException : ApplicationException
     {
